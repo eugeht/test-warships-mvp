@@ -1,0 +1,59 @@
+/**
+ * Main styles file
+ *
+ * SASS - SCSS syntax
+ */
+
+
+
+// Vendor
+@import 'https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Condensed:wght@400;700&display=swap';
+
+// @import "/node_modules/swiper/swiper";
+// @import "/node_modules/swiper/modules/navigation/navigation";
+// @import "/node_modules/swiper/modules/pagination/pagination";
+// @import "/node_modules/swiper/modules/parallax/parallax";
+// @import "/node_modules/swiper/modules/effect-creative/effect-creative";
+// @import "/node_modules/swiper/modules/effect-fade/effect-fade";
+// @import "/node_modules/swiper/modules/zoom/zoom";
+// @import "/node_modules/swiper/modules/grid/grid";
+// @import "/node_modules/swiper/modules/free-mode/free-mode";
+// @import "/node_modules/swiper/modules/pagination/pagination";
+
+// Variables
+@import "./0-variables/css-variables";
+@import "./0-variables/sass-variables";
+
+// @import "./0-variables/animations";
+
+// Global styles
+@import "./1-global/global";
+
+// Fonts
+// @import "./2-fonts/fonts";
+
+// Base styles
+@import "./2-base/normalization";
+@import "./2-base/component-transitions";
+
+// Layout
+@import "./3-layout/base";
+
+// @import "./4-layout/page";
+
+// @import "./4-layout/centerings";
+// @import "./4-layout/container";
+
+// Elements
+// @import "./5-components/buttons";
+// @import "./5-components/emoji-selector";
+// @import "./5-components/forms";
+// @import "./5-components/iconed-list-item";
+// @import "./5-components/inputs";
+// @import "./5-components/labels";
+// @import "./5-components/links";
+// @import "./5-components/lists";
+// @import "./5-components/loaders";
+
+// Utility classes
+// @import "./6-utility/text";

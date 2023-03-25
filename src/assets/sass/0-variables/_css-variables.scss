@@ -1,0 +1,12 @@
+/**
+  CSS Variables
+*/
+
+:root {
+  --color-bg: #102031;
+  --color-text: #fff;
+  --color-text-a50: #{ rgba( #fff, 0.5 ) };
+  --color-header: #333;
+  --color-header-hover: #434343;
+  --gap-h-sm: #{ rem(16px) };
+}
