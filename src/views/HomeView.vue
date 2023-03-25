@@ -7,10 +7,9 @@ import { api } from '@/api'
 import Grid from 'vue-virtual-scroll-grid'
 // Localization
 import { useI18n } from 'vue-i18n'
-// Utils
-import { integerToRoman } from '@/utils/typography'
 // Components
 import CustomSelect from '@/components/CustomSelect.vue'
+import VehicleBlock from '@/components/VehicleBlock.vue'
 // Types
 import type { 
   Vehicle, Vehicles, 
@@ -202,12 +201,6 @@ const getVehicles: ComputedRef<Vehicle[]> = computed( () => {
 } )
 
 
-const getVehicleTypes = ( tags: string[] ) => {
-  return tags.filter( tag => {
-    return vehicleTypes.value && vehicleTypes.value[ tag ]
-  } )
-}
-
 const loadVehicles = async () => {
   interface VehicleResponse {
     data   : Vehicles
@@ -327,99 +320,47 @@ onMounted( async () => {
     </button>
   </nav>
 
-  <div class="main">
-    <div 
-      v-if="vehicles"
-      class="container"
+  <div 
+    v-if="vehicles && vehicleTypes && nations && mediaPath"
+    class="vehicles-grid"
+  >
+    <!-- :page-provider="async (pageNumber, pageSize) => Array(pageSize).fill('x')" -->
+    <Grid
+      :length="getVehicles.length"
+      :page-provider="async () => getVehicles"
+      :page-size="getVehicles.length || 1"
+      :respect-scroll-to-on-resize="true"
+      class="vehicles"
     >
-      <!-- :page-provider="async (pageNumber, pageSize) => Array(pageSize).fill('x')" -->
-      <Grid
-        :length="getVehicles.length"
-        :page-provider="async () => getVehicles"
-        :page-size="getVehicles.length || 1"
-        :respect-scroll-to-on-resize="true"
-        class="vehicles"
-      >
-        <template #probe>
-          <div 
-            class="vehicle"
-            sizes="(min-width: 768px) 360px, 290px"
-          >
-            asdasd
-          </div>
-        </template>
+      <template #probe>
+        <div 
+          class="vehicle"
+          sizes="(min-width: 768px) 360px, 290px"
+        >
+          asdasd
+        </div>
+      </template>
 
-        <template #placeholder="{ style }">
-          <div 
-            class="vehicle"
-            :style="style" 
-            sizes="(min-width: 768px) 360px, 290px"
-          >
-            ..
-          </div>
-        </template>
+      <template #placeholder="{ style }">
+        <div 
+          class="vehicle"
+          :style="style" 
+          sizes="(min-width: 768px) 360px, 290px"
+        >
+          ..
+        </div>
+      </template>
 
-        <template #default="{ item, style }">
-          <div 
-            class="vehicle"
-            :style="style"
-          >
-            <div class="vehicle-image">
-              <span
-                v-if="nations"
-                class="chip chip--nation chip--nation--preview"
-              >
-                <img 
-                  class="chip__icon"
-                  :src="`${ mediaPath }${ nations[ item.nation ].icons.small }`"
-                  width="214"
-                  height="126"
-                >
-                <!-- {{ nations[ item.nation ].localization.mark[ locale ] }} -->
-              </span>
-              <img 
-                :src="`${ mediaPath }${ item.icons.default }`"
-                loading="lazy"
-                width="214"
-                height="126"
-              >
-            </div>
-            <div class="vehicle-body">
-              <header class="vehicle-header">
-                <small>
-                  <template v-if="item.level > 10">
-                    ★
-                  </template>
-                  <template v-else>
-                    {{ integerToRoman( item.level ) }}
-                  </template>
-                </small>
-
-                {{ item.localization.mark[ locale ] }}
-              </header>
-              <div 
-                v-if="vehicleTypes"
-                class="vehicle__info"
-              >
-                <span
-                  v-for="v in getVehicleTypes( item.tags )"
-                  :key="`vehicleType_${ item.name }_${ v }`"
-                  class="chip chip--vehicle-type"
-                >
-                  <img 
-                    class="chip__icon"
-                    :src="`${ mediaPath }${ vehicleTypes[ v ].icons.default }`"
-                    width="27"
-                    height="27"
-                  >
-                  {{ vehicleTypes[ v ].localization.mark[ locale ] }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </template>
-      </Grid>
-    </div>
+      <template #default="{ item, style }">
+        <VehicleBlock 
+          :vehicle="item"
+          :style="style"
+          :nations="nations"
+          :vehicle-types="vehicleTypes"
+          :media-path="mediaPath"
+        />
+      </template>
+    </Grid>
   </div>
 </template>
 
@@ -435,6 +376,7 @@ $home-filters-breakpoint-lg: #{ rem( 800px ) };
 
 .home-filters {
   position: relative;
+  z-index: 100;
 }
 
 
@@ -570,100 +512,24 @@ $home-filters-breakpoint-lg: #{ rem( 800px ) };
 
 
 
-.main {
+// VEHICLES --------------------------------------------------------------------
+.vehicles-grid {
+  padding: #{rem(16px)};
+  // height: 800px;
   overflow: auto;
-}
-
-.container {
-  width: 760px;
-  height: 800px;
-  margin: 0 auto;
+  flex: 0 1 auto;
 }
 
 .vehicles {
   display: grid;
   height: 100%;
-  padding-top: #{ rem(64px) };
+  padding-top: #{ rem(16px) };
   grid-gap: 15px;
-  grid-template-columns: repeat(3,1fr);
-} 
-
-.vehicle {
-  overflow: hidden;
-} 
-
-.vehicle-image {
-  position: relative;
-
-  img {
-    margin: 0 auto;
-  }
-}
-
-.vehicle-body {
-  padding: 38px 16px 8px;
-  margin-top: -25px;
-  background: #00000029;
-  border: 1px solid #9fb5fc29;
-  border-radius: 4px;
-}
-
-.vehicle-header {
-  font-family: $font-family-condensed;
-  font-weight: 700;
-  font-size: #{ rem(20px) };
-  text-align: center;
-
-  small {
-    color: #AD7A07;
-    font-size: 75%;
-  }
-}
-
-.chip {
-  display: inline-block;
-  vertical-align: top;
-  font-weight: 400;
-  font-family: $font-family-condensed;
-  font-size: #{ rem(14px) };
-  line-height: 27px;
-
-  color: rgb(159 181 252 / 75%);
-
-  &.chip--vehicle-type {
-    .chip__icon {
-      width: 27px;
-      height: 27px;
-    }
-  }
-
-  &.chip--nation {
-    // position: absolute;
-  }
+  grid-template-columns: repeat(1,1fr);
   
-  &.chip--nation--preview {
-    position: absolute;
-    bottom: #{ rem( 40px ) };
-    left: #{ rem( 4px ) };
-
-    .chip__icon {
-      width: 42px;
-
-      // height: 27px;
-    }
+  @media only screen and (min-width: #{ rem(640px) }) {
+    grid-template-columns: repeat(3,1fr);
   }
-}
-
-.chip__icon {
-  display: inline-block;
-  vertical-align: top;
-}
-
-.vehicle__info {
-  text-align: center;
-}
-
-// ..
-
+} 
 
 </style>
