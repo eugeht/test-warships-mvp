@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// import TheWelcome from '../components/TheWelcome.vue'
 // Vue
 import { ref, type Ref, computed, type ComputedRef, onMounted } from 'vue'
 // Api
@@ -10,11 +9,29 @@ import Grid from 'vue-virtual-scroll-grid'
 import { useI18n } from 'vue-i18n'
 // Utils
 import { integerToRoman } from '@/utils/typography'
+// Components
+import CustomSelect from '@/components/CustomSelect.vue'
+// Types
+import type { 
+  Vehicle, Vehicles, 
+  VehicleTypes,
+  Nation, Nations
+} from '@/types/types'
 
 
 
-// LOCALIZATION ----------------------------------------------------------------
-const { locale } = useI18n()
+// Composables
+const { locale, t } = useI18n()
+
+
+
+// FILTERS TOGGLER -------------------------------------------------------------
+const isFiltersVisible: Ref<boolean> = ref( true )
+
+const toggleFiltersVisible = () => {
+  isFiltersVisible.value = !isFiltersVisible.value
+}
+// /FILTERS TOGGLER
 
 
 
@@ -52,42 +69,13 @@ const unsetSearchQuery = () => {
 
 
 // NATIONS ---------------------------------------------------------------------
-interface Nation {
-  id: number
-  name: string,
-  icons: {
-    default: string
-    tiny: string
-    small: string
-    large: string
-    // local_large: string // GUI
-    // local_tiny: string // GUI
-    // local_small: string // GUI
-  },
-  color: string // 14764062
-  tags: string[]
-  localization: {
-    mark: {
-      [ propName: string]: string
-    }
-  }
-}
-
-interface Nations {
-  [ propName: string ]: Nation
-}
-
 
 // @todo: save to localStorage
 const nation: Ref<string | null> = ref( null )
 
 // Set locale and save to localStorage
-const setNation = ( event: Event ) => {
-  if ( !event.target ) {
-    return
-  }
-
-  nation.value = ( event.target as HTMLSelectElement ).value
+const setNation = ( value: string ) => {
+  nation.value = value
 
   // localStorage.setItem( 'nation', nation.value )
 }
@@ -117,7 +105,7 @@ const loadNations = async () => {
           return acc
         }, {} )
 
-      // console.log( 'Nations', nations.value )
+      console.log( 'Nations', nations.value )
     }
   } catch ( errors ) {
     console.log( errors )
@@ -127,60 +115,23 @@ const loadNations = async () => {
 
 
 // VEHICLE TYPES ---------------------------------------------------------------
-interface VehicleType {
-  name: string
-  icons: {
-    default: string
-    elite: string
-    premium: string
-    special: string
-    normal: string
-  }
-  sort_order: 5
-  localization: {
-    shortmark: {
-      [ propName: string]: string
-    }
-    mark: {
-      [ propName: string]: string
-    }
-  }
-}
-
-
-
-interface VehicleTypes {
-  [ propName: string ] : VehicleType
-}
-
-
 
 // @todo: save to localStorage
 const vehicleType: Ref<string | null> = ref( null )
 
-const setVehicleType = ( event: Event ) => {
-  if ( !event.target ) {
-    return
-  }
+const setVehicleType = ( value: string ) => {
+  vehicleType.value = value
 
-  vehicleType.value = ( event.target as HTMLSelectElement ).value
+  // localStorage.setItem( 'nation', nation.value )
 }
+
 
 const unsetVehicleType = () => {
   vehicleType.value = null
 }
 
+
 const vehicleTypes: Ref<VehicleTypes | undefined> = ref()
-
-const vehicleTypesOptions: ComputedRef<VehicleType[]> = computed( () => {
-  if ( !vehicleTypes.value ) {
-    return []
-  }
-
-  return Object.values( vehicleTypes.value ).sort( ( a, b ) => { 
-    return a.sort_order > b.sort_order ? 1 : -1 
-  } )
-} )
 
 
 const loadVehicleTypes = async () => {
@@ -192,8 +143,13 @@ const loadVehicleTypes = async () => {
   try {
     const { data } = await api.get<VehicleTypesResponse>( 'vehicle_types_common' )
     if ( data.data ) {
-      vehicleTypes.value = data.data
-      // console.log( 'VehicleTypes', vehicleTypes.value )
+      // vehicleTypes.value = data.data
+      vehicleTypes.value = Object.keys( data.data )
+        .reduce( ( acc: VehicleTypes, key ) => {
+          acc[ key.toLowerCase() ] = data.data[ key ]
+          return acc
+        }, {} )
+      console.log( 'VehicleTypes', vehicleTypes.value )
     }
   } catch ( errors ) {
     console.log( errors )
@@ -203,40 +159,6 @@ const loadVehicleTypes = async () => {
 
 
 // VEHICLES --------------------------------------------------------------------
-interface Vehicle {
-  icons: {
-    default: string // 214x126
-    small: string // 214x126
-    medium: string // 435x256
-    large: string // 870x512
-    contour: string
-    contour_alive: string
-    contour_dead: string
-    // local_small: string // GUI
-    // local_contour: string // GUI
-    // local_contour_dead: string // GUI
-    // local_contour_alive: string // GUI
-  }
-  level: number
-  localization: {
-    description: {
-      [ propName: string ]: string
-    }
-    mark: {
-      [ propName: string ]: string
-    }
-    shortmark: {
-      [ propName: string ]: string
-    }
-  }
-  name: string
-  nation: string
-  tags: string[]
-}
-
-interface Vehicles {
-  [ propName: number ]: Vehicle
-}
 
 const vehicles: Ref<Vehicles | undefined> = ref( undefined )
 
@@ -318,65 +240,90 @@ onMounted( async () => {
 
   // Loading vehicles
   await loadVehicles()
-
-  // ..
 } )
 </script>
 
 
 
 <template>
-  <nav>
-    <select
-      v-model="vehicleType" 
-      @change="( $event ) => setVehicleType( $event )"
+  <nav class="home-filters">
+    <div 
+      class="home-filters__layout"
+      :class="{
+        'home-filters__layout--hidden': !isFiltersVisible
+      }"
     >
-      <option 
-        v-for="vehicleTypeOption in vehicleTypesOptions" 
-        :key="`vehicleType_${ vehicleTypeOption.name }`" 
-        :value="vehicleTypeOption.name" 
-        :selected="vehicleTypeOption.name === vehicleType"
+      <div 
+        v-if="vehicleTypes"
+        class="home-filters-filter"
       >
-        {{ vehicleTypeOption.name }}
-      </option>
-    </select>
-    <button 
-      v-if="vehicleType"
-      @click="unsetVehicleType"
-    >
-      X
-    </button>
+        <CustomSelect 
+          :placeholder="t('selectVehicleType')"
+          :value="vehicleType"
+          :options="vehicleTypes"
+          :show-icon="true"
+          :media-path="mediaPath"
+          @select="$vehicleType => setVehicleType( $vehicleType )"
+          @clear="unsetVehicleType"
+        />
+      </div>
 
-    <select
-      v-if="nations"
-      v-model="nation" 
-      @change="( $event ) => setNation( $event )"
-    >
-      <option 
-        v-for="nationOption in nations" 
-        :key="`nationOption_${ nationOption.name }`" 
-        :value="nationOption.name" 
-        :selected="nationOption.name === nation"
+      <div 
+        v-if="nations"
+        class="home-filters-filter"
       >
-        {{ nations[ nationOption.name ].localization.mark[ locale ] }}
-      </option>
-    </select>
-    <button 
-      v-if="nation"
-      @click="unsetNation"
-    >
-      X
-    </button>
+        <CustomSelect 
+          :placeholder="t('selectNation')"
+          :value="nation"
+          :options="nations"
+          :show-icon="true"
+          :media-path="mediaPath"
+          @select="$nation => setNation( $nation )"
+          @clear="unsetNation"
+        />
+      </div>
 
-    <input 
-      v-model="searchQuery"
-      type="text"
-    >
+      <div class="home-filters-filter">
+        <input 
+          v-model="searchQuery"
+          type="text"
+          class="home-filters-filter__input"
+          :placeholder="t('search')"
+        >
+        <button 
+          v-if="searchQuery"
+          class="home-filters-filter__btn"
+          @click="unsetSearchQuery"
+        >
+          <svg
+            class="home-filters-filter__icon"
+            width="22"
+            height="22"
+            viewBox="0 0 1024 1024"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <use xlink:href="#svg-icon-close-cross" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- mobile shkink -->
     <button 
-      v-if="searchQuery"
-      @click="unsetSearchQuery"
+      class="home-filters-shrink-btn"
+      @click="toggleFiltersVisible"
     >
-      X
+      <svg
+        class="home-filters-shrink-btn__icon"
+        width="24"
+        height="10"
+        viewBox="0 120 512 250"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <use xlink:href="#svg-icon-chevron-compact" />
+      </svg>
     </button>
   </nav>
 
@@ -389,7 +336,7 @@ onMounted( async () => {
       <Grid
         :length="getVehicles.length"
         :page-provider="async () => getVehicles"
-        :page-size="getVehicles.length"
+        :page-size="getVehicles.length || 1"
         :respect-scroll-to-on-resize="true"
         class="vehicles"
       >
@@ -472,32 +419,6 @@ onMounted( async () => {
           </div>
         </template>
       </Grid>
-      <!-- <div 
-        v-if="vehicles"
-        class="vehicles"
-      >
-        <div
-          v-for="vehicle, code in vehicles"
-          :key="`vehicle_${ code }`"
-          class="vehicle"
-        >
-          <div>
-            {{ vehicle.localization.mark[ locale ] }}
-            <small>
-              [level: {{ vehicle.level }}]
-            </small>
-            < !-- <div>
-              {{ vehicle.localization.description[ locale ] }}
-            </div> -- >
-          </div>
-          <div>
-            <img 
-              :src="`${ mediaPath }${ vehicle.icons.default }`"
-              loading="lazy"
-            >
-          </div>
-        </div>
-      </div> -->
     </div>
   </div>
 </template>
@@ -505,19 +426,151 @@ onMounted( async () => {
 
 
 <style lang="scss">
-// header {
-//   border-bottom: 1px solid #fff;
-// }
 
-nav {
-  padding: 0.5rem;
-  background: #161616cf;
+// FILTERS ---------------------------------------------------------------------
+$home-filters-breakpoint-md: #{ rem( 640px ) };
+$home-filters-breakpoint-lg: #{ rem( 800px ) };
+
+
+
+.home-filters {
+  position: relative;
 }
 
+
+.home-filters__layout {
+  display: flex;
+  padding: #{ rem(10px) } #{ rem(10px) };
+
+  flex-direction: column;
+  background: var(--color-navbar);
+  gap: #{rem(8px)};
+
+  @media only screen and (min-width: #{ $home-filters-breakpoint-md }) {
+    flex-direction: row;
+    gap: #{rem(16px)};
+  }
+
+  &.home-filters__layout--hidden {
+    overflow: hidden;
+    height: #{rem(0px)};
+    padding: 0;
+    border-top: #{rem(8px)} solid var(--color-navbar);
+  }
+}
+
+
+.home-filters-filter {
+  position: relative;
+
+  justify-content: space-between;
+
+  flex-grow: 1;
+  
+  // @media only screen and (min-width: #{ $home-filters-breakpoint-md }) {
+  // }
+
+  @media only screen and (min-width: #{ $home-filters-breakpoint-lg }) {
+    min-width: 200px;
+
+    flex-grow: 0;
+  }
+}
+
+
+.home-filters-filter__input {
+  display: block;
+  width: 100%;
+  height: 1.8em;
+  padding: var(--input-padding);
+  margin: 0;
+  border: none;
+  background: var(--color-input-bg);
+  border-radius: var(--input-border-radius);
+  vertical-align: top;
+
+  font-size: var(--input-font-size);
+  color: var(--color-text);
+  line-height: var(--input-line-height);
+}
+
+
+.home-filters-filter__btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  height: 100%;
+  padding: 0 #{ rem(4px) };
+  margin: 0;
+  background: none;
+  border: none;
+  color: var(--color-text);
+  opacity: 0.65;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.home-filters-filter__icon {
+  display: block;
+  width: #{ rem(20px) };
+  height: #{ rem(20px) };
+}
+
+
+.home-filters-shrink-btn {
+  position: absolute;
+  top: 100%;
+  background: var(--color-navbar);
+  color: var(--color-text);
+  left: 50%;
+  transform: translate(-50%, 0);
+  appearance: none;
+  padding: #{rem(2px)} #{rem(6px)};
+  margin: 0;
+  border: none;
+  cursor: pointer;
+  border-radius: 0 0 var(--input-border-radius) var(--input-border-radius);
+
+  @media only screen and (min-width: #{ $home-filters-breakpoint-md }) {
+    left: auto;
+    transform: none;
+    right: #{rem(6px)};
+  }
+
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: #{rem(-8px)};
+    right: #{rem(-8px)};
+    bottom: #{rem(-8px)};
+    left: #{rem(-8px)};
+  }
+}
+
+
+.home-filters-shrink-btn__icon {
+  transform: rotate(180deg);
+  opacity: 0.6;
+
+  .home-filters-shrink-btn:hover & {
+    opacity: 1;
+  }
+
+  .home-filters__layout--hidden ~ .home-filters-shrink-btn & {
+    transform: rotate(0deg);
+  }
+}
+
+// / FILTERS
+
+
+
 .main {
-  // margin-top: 20px;
-  // background: #102031;
-  // height: 800px;
   overflow: auto;
 }
 

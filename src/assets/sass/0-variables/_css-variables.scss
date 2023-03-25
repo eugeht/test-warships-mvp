@@ -8,5 +8,12 @@
   --color-text-a50: #{ rgba( #fff, 0.5 ) };
   --color-header: #333;
   --color-header-hover: #434343;
+  --color-input-bg: #{ rgba( #fff, 0.06 ) };
+  --input-border-radius: #{ rem(4px) };
+  --input-font-size: #{ rem(16px) };
+  --input-line-height: #{ rem(16px) };
+  --input-padding: #{ rem(4px) } #{ rem(24px) } #{ rem(4px) } #{ rem(8px) };
+  --input-div-padding: #{ rem(6px) } #{ rem(24px) } #{ rem(6px) } #{ rem(8px) };
   --gap-h-sm: #{ rem(16px) };
+  --color-navbar: #161616cf;
 }

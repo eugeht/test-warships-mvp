@@ -10,16 +10,12 @@ import  LocaleForm from '@/components/LocaleForm.vue'
 const isLanguageMenuVisible: Ref<boolean> = ref( false )
 
 
-const showLanguageMenu = ( event: Event ) => {
-  event.stopImmediatePropagation()
-
+const showLanguageMenu = () => {
   isLanguageMenuVisible.value = true
 }
 
 
-const hideLanguageMenu = ( event: Event ) => {
-  event.stopImmediatePropagation()
-
+const hideLanguageMenu = () => {
   isLanguageMenuVisible.value = false
 }
 // /LANGUAGE MENU
@@ -58,7 +54,7 @@ const hideLanguageMenu = ( event: Event ) => {
       >
         <button 
           class="the-header-lang-btn"
-          @click="$event => isLanguageMenuVisible ? hideLanguageMenu( $event ) : showLanguageMenu( $event )"
+          @click="isLanguageMenuVisible ? hideLanguageMenu() : showLanguageMenu()"
         >
           <svg
             class="the-header-lang-btn__img"
@@ -82,7 +78,7 @@ const hideLanguageMenu = ( event: Event ) => {
           class="the-header-lang__menu"
         >
           <LocaleForm 
-            @close="$event => hideLanguageMenu( $event )"
+            @close="hideLanguageMenu()"
           />
         </div>
       </div>
@@ -186,11 +182,6 @@ $header-logo-breakpoint: #{ rem(420px) };
 }
 
 
-// .the-header-lang-btn__img {
-//   // ..
-// }
-
-
 .the-header-lang-btn__arrow {
   margin-left: rem(8px);
   transition: transform 0.2s linear;
@@ -211,6 +202,7 @@ $header-logo-breakpoint: #{ rem(420px) };
   margin-right: calc( -1 * var(--gap-h-sm) );
   background: var(--color-header-hover);
 }
+
 // /LANGUAGE SELECTOR
 
 </style>

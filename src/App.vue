@@ -6,7 +6,7 @@ import TheHeader from '@/components/TheHeader.vue'
 import HomeView from '@/views/HomeView.vue'
 // Localization
 import { useI18n } from 'vue-i18n'
-import { setLocaleHtmlAttr } from '@/localization/utils'
+import { setLocaleHtmlAttr } from '@/localization'
 
 
 
@@ -47,9 +47,8 @@ if ( savedLocale ) {
 .page {
   position: relative;
 
-  flex: 1 0 auto;
+  overflow: auto;
 
-  // margin-top: #{ rem(-64px) };
-  // padding-top: #{ rem(64px) };
+  flex: 1 0 auto;
 }
 </style>

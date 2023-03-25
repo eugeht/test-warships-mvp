@@ -1,16 +1,15 @@
 <script setup lang="ts">
 // Vue
 import { defineEmits } from 'vue'
-import { vOnClickOutside } from '@vueuse/components'
+// import { vOnClickOutside } from '@vueuse/components'
 // Localization
 import { useI18n } from 'vue-i18n'
-import { languageNames } from '@/localization/config'
-import { setLocaleHtmlAttr } from '@/localization/utils'
+import { languageNames, setLocaleHtmlAttr } from '@/localization'
 
 
 
 // Emits
-const emit = defineEmits<{( e: 'close', event: Event ): void }>()
+const emit = defineEmits<{( e: 'close' ): void }>()
 
 
 // Composables
@@ -19,8 +18,8 @@ const { availableLocales, locale } = useI18n()
 
 
 // Handle close emit
-const handleClose = ( event: Event ) => {
-  emit( 'close', event )
+const handleClose = () => {
+  emit( 'close' )
 }
 
 
@@ -35,15 +34,16 @@ const setLocale = ( event: Event ) => {
 
   setLocaleHtmlAttr( ( event.target as HTMLSelectElement ).value )
 
-  handleClose( event )
+  handleClose()
 }
 </script>
 
 
 
 <template>
+  <!-- _v-on-click-outside="$event => handleClose( $event )" -->
   <form 
-    v-on-click-outside="$event => handleClose( $event )"
+    v-click-outside="handleClose"
     class="locale-form"
   >
     <label 
@@ -111,6 +111,7 @@ $locale-form-breakpoint: #{ rem(420px) };
 .locale-form-label__input {
   position: absolute;
   top: 0;
+
   height: 1px;
   width: 1px;
   opacity: 0;
