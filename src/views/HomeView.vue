@@ -305,6 +305,7 @@ onMounted( async () => {
     <!-- mobile shkink -->
     <button 
       class="home-filters-shrink-btn"
+      aria-label="Shrink filters (сюда надо перевод)"
       @click="toggleFiltersVisible"
     >
       <svg

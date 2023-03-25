@@ -54,6 +54,7 @@ const hideLanguageMenu = () => {
       >
         <button 
           class="the-header-lang-btn"
+          aria-label="Change language (сюда надо перевод)"
           @click="isLanguageMenuVisible ? hideLanguageMenu() : showLanguageMenu()"
         >
           <svg

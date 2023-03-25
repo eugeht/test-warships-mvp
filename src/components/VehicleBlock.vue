@@ -49,21 +49,25 @@ const getVehicleTypes = ( tags: string[] ) => {
     <div class="vehicle-image">
       <span
         v-if="nations"
-        class="chip chip--nation chip--nation--preview"
+        class="vehicle-nation"
       >
         <img 
-          class="chip__icon"
-          :src="`${ mediaPath }${ nations[ vehicle.nation ].icons.small }`"
+          class="vehicle-nation__icon"
+          :src="`${ mediaPath }${ nations[ vehicle.nation ].icons.default }`"
+          :alt="nations[ vehicle.nation ].localization.mark[ locale ]"
+          :title="nations[ vehicle.nation ].localization.mark[ locale ]"
           width="214"
           height="126"
         >
-        <!-- {{ nations[ item.nation ].localization.mark[ locale ] }} -->
       </span>
       <img 
-        :src="`${ mediaPath }${ vehicle.icons.default }`"
+        :src="`${ mediaPath }${ vehicle.icons.medium }`"
+        class="vehicle-image__img"
+        :alt="vehicle.localization.mark[ locale ]"
+        :title="vehicle.localization.mark[ locale ]"
         loading="lazy"
-        width="214"
-        height="126"
+        width="435"
+        height="256"
       >
     </div>
     <div class="vehicle-body">
@@ -79,24 +83,25 @@ const getVehicleTypes = ( tags: string[] ) => {
 
         {{ vehicle.localization.mark[ locale ] }}
       </header>
-      <div 
+      <template 
         v-if="vehicleTypes"
-        class="vehicle__info"
       >
-        <span
+        <aside
           v-for="v in getVehicleTypes( vehicle.tags )"
           :key="`vehicleType_${ vehicle.name }_${ v }`"
-          class="chip chip--vehicle-type"
+          class="vehicle-type"
         >
+          {{ vehicleTypes[ v ].localization.mark[ locale ] }}
           <img 
-            class="chip__icon"
+            class="vehicle-type__icon"
             :src="`${ mediaPath }${ vehicleTypes[ v ].icons.default }`"
+            :alt="vehicleTypes[ v ].localization.mark[ locale ]"
+            :title="vehicleTypes[ v ].localization.mark[ locale ]"
             width="27"
             height="27"
           >
-          {{ vehicleTypes[ v ].localization.mark[ locale ] }}
-        </span>
-      </div>
+        </aside>
+      </template>
     </div>
   </div>
 </template>
@@ -106,30 +111,69 @@ const getVehicleTypes = ( tags: string[] ) => {
 <style lang="scss">
 
 .vehicle {
+  position: relative;
   overflow: hidden;
+  background: #00000029;
+  border: 1px solid #9fb5fc29;
+  border-radius: 4px;
 } 
 
 .vehicle-image {
   position: relative;
+  aspect-ratio: 20 / 10;
 
-  img {
-    margin: 0 auto;
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 22%;
+    background: rgba(0, 0, 0, 0.1607843137);
+  }
+
+  .vehicle-image__img {
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
   }
 }
 
+.vehicle-nation {
+  position: absolute;
+  top: #{ rem( 16px ) };
+  left: #{ rem( 16px ) };
+  width: 18%;
+  z-index: 1;
+  cursor: help;
+
+  .vehicle-nation__icon {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+
 .vehicle-body {
-  padding: 38px 16px 8px;
-  margin-top: -25px;
   background: #00000029;
-  border: 1px solid #9fb5fc29;
-  border-radius: 4px;
+  border-radius: 0 0 2px 2px;
+  padding: #{rem(6px)} #{rem(16px)} #{rem(12px)} #{rem(16px)};
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
 .vehicle-header {
   font-family: $font-family-condensed;
   font-weight: 700;
   font-size: #{ rem(20px) };
-  text-align: center;
+  text-align: left;
 
   small {
     color: #AD7A07;
@@ -137,46 +181,24 @@ const getVehicleTypes = ( tags: string[] ) => {
   }
 }
 
-.chip {
+
+.vehicle-type {
   display: inline-block;
   vertical-align: top;
   font-weight: 400;
   font-family: $font-family-condensed;
   font-size: #{ rem(14px) };
-  line-height: 27px;
+  line-height: 1;
 
-  color: rgb(159 181 252 / 75%);
+  color: #6d82a3;
 
-  &.chip--vehicle-type {
-    .chip__icon {
-      width: 27px;
-      height: 27px;
-    }
-  }
-
-  &.chip--nation {
-    // position: absolute;
-  }
-  
-  &.chip--nation--preview {
-    position: absolute;
-    bottom: #{ rem( 40px ) };
-    left: #{ rem( 4px ) };
-
-    .chip__icon {
-      width: 42px;
-
-      // height: 27px;
-    }
+  .vehicle-type__icon {
+    display: inline-block;
+    vertical-align: middle;
+    width: 27px;
+    height: 27px;
+    margin: #{rem(-3px)} 0 #{rem(-3px)} #{rem(2px)};
   }
 }
 
-.chip__icon {
-  display: inline-block;
-  vertical-align: top;
-}
-
-.vehicle__info {
-  text-align: center;
-}
 </style>

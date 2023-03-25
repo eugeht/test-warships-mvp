@@ -86,12 +86,16 @@ const handleClear = () => {
             :src="`${ mediaPath }${ ( options as Nations )[ value ].icons.tiny }`"
             width="20"
             height="20"
+            :alt="options[ value ].localization.mark[ locale ]"
+            :title="options[ value ].localization.mark[ locale ]"
           >
           <img 
             v-else-if="'default' in options[ value ].icons"
             :src="`${ mediaPath }${ ( options as VehicleTypes )[ value ].icons.default }`"
             width="20"
             height="20"
+            :alt="options[ value ].localization.mark[ locale ]"
+            :title="options[ value ].localization.mark[ locale ]"
           >
         </span>
         {{ options[ value ].localization.mark[ locale ] }}
@@ -155,12 +159,16 @@ const handleClear = () => {
             :src="`${ mediaPath }${ ( options as Nations )[ option.name ].icons?.tiny }`"
             width="20"
             height="20"
+            :alt="options[ option.name ].localization.mark[ locale ]"
+            :title="options[ option.name ].localization.mark[ locale ]"
           >
           <img 
             v-else-if="'default' in options[ option.name ].icons"
             :src="`${ mediaPath }${ ( options as VehicleTypes )[ option.name ].icons?.default }`"
             width="20"
             height="20"
+            :alt="options[ option.name ].localization.mark[ locale ]"
+            :title="options[ option.name ].localization.mark[ locale ]"
           >
         </span>
         {{ options[ option.name ].localization.mark[ locale ] }}
