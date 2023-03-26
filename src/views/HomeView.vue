@@ -11,6 +11,8 @@ import { useI18n } from 'vue-i18n'
 import CustomSelect from '@/components/CustomSelect.vue'
 import VehicleBlock from '@/components/VehicleBlock.vue'
 import VehicleSliderBlock from '@/components/VehicleSliderBlock.vue'
+// Media
+import { useMedia } from '@/composables/useMedia'
 // Swiper
 import { register } from 'swiper/element/bundle'
 // Types
@@ -25,6 +27,7 @@ import type {
 
 // Composables
 const { locale, t } = useI18n()
+const { mediaPath } = useMedia()
 
 
 
@@ -38,58 +41,42 @@ const toggleFiltersVisible = () => {
 
 
 
-// MEDIA -----------------------------------------------------------------------
-let mediaPath: string | undefined
-
-
-const loadMediaPath = async () => {
-  interface MediaResponse {
-    data   : string
-    status : string
-  }
-
-  try {
-    const { data } = await api.get<MediaResponse>( 'media_path' )
-    if ( data.data ) {
-      mediaPath = data.data
-      // console.log( 'MediaPath', mediaPath )
-    }
-  } catch ( errors ) {
-    console.log( errors )
-  }
-}
-
-
-
 // SEARCH ----------------------------------------------------------------------
-const searchQuery: Ref<string | null> = ref( null )
+const filterSearchQuery: Ref<string | null> = ref( null )
 
-const unsetSearchQuery = () => {
-  searchQuery.value = null
+const unsetFilterSearchQuery = () => {
+  filterSearchQuery.value = null
 }
-
+// /SEARCH
 
 
 
 // NATIONS ---------------------------------------------------------------------
+// Current nation
+const filterNation: Ref<string | null> = ref( localStorage.getItem( 'filterNation' ) || null )
 
-// @todo: save to localStorage
-const nation: Ref<string | null> = ref( null )
 
 // Set locale and save to localStorage
-const setNation = ( value: string ) => {
-  nation.value = value
+const setFilterNation = ( value: string ) => {
+  filterNation.value = value
 
-  // localStorage.setItem( 'nation', nation.value )
+  // Save
+  localStorage.setItem( 'filterNation', filterNation.value )
 }
 
-const unsetNation = () => {
-  nation.value = null
+const unsetFilterNation = () => {
+  filterNation.value = null
+
+  // Remove
+  localStorage.removeItem( 'filterNation' )
 }
 
+
+// Nations list
 const nations: Ref<Nations | undefined> = ref()
 
 
+// Load nation list
 const loadNations = async () => {
   interface NationsResponse {
     data   : Nation[]
@@ -179,7 +166,7 @@ const vehiclesFiltered: ComputedRef<Vehicles> = computed( () => {
     const vehicle = vehicles.value.get( k ) as Vehicle
 
     // Nation filter
-    if ( nation.value && vehicle.nation !== nation.value ) {
+    if ( filterNation.value && vehicle.nation !== filterNation.value ) {
       continue
     }
 
@@ -194,8 +181,8 @@ const vehiclesFiltered: ComputedRef<Vehicles> = computed( () => {
       }
     }
 
-    if ( searchQuery.value ) {
-      if ( vehicle.localization.mark[ locale.value ]?.toLowerCase().indexOf( searchQuery.value?.toLowerCase() ) < 0 ) {
+    if ( filterSearchQuery.value ) {
+      if ( vehicle.localization.mark[ locale.value ]?.toLowerCase().indexOf( filterSearchQuery.value?.toLowerCase() ) < 0 ) {
         continue
       }
     }
@@ -354,8 +341,6 @@ onMounted( async () => {
 
   // Send requests
   await Promise.all( [
-    // Loading media path
-    loadMediaPath(),
     // Loading nations
     loadNations(),
     // Loading vehicle types
@@ -399,26 +384,26 @@ onMounted( async () => {
       >
         <CustomSelect 
           :placeholder="t('selectNation')"
-          :value="nation"
+          :value="filterNation"
           :options="nations"
           :show-icon="true"
           :media-path="mediaPath"
-          @select="$nation => setNation( $nation )"
-          @clear="unsetNation"
+          @select="$nation => setFilterNation( $nation )"
+          @clear="unsetFilterNation"
         />
       </div>
 
       <div class="home-filters-filter">
         <input 
-          v-model="searchQuery"
+          v-model="filterSearchQuery"
           type="text"
           class="home-filters-filter__input"
           :placeholder="t('search')"
         >
         <button 
-          v-if="searchQuery"
+          v-if="filterSearchQuery"
           class="home-filters-filter__btn"
-          @click="unsetSearchQuery"
+          @click="unsetFilterSearchQuery"
         >
           <svg
             class="home-filters-filter__icon"

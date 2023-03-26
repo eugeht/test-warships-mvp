@@ -4,6 +4,8 @@ import TheSvgSpritemap from '@/components/TheSvgSpritemap.vue'
 import TheHeader from '@/components/TheHeader.vue'
 /* Вообще тут обычно vue-router, но так как одна страница только - пусть будет так */
 import HomeView from '@/views/HomeView.vue'
+// Media
+import { useMedia } from '@/composables/useMedia'
 // Localization
 import { useI18n } from 'vue-i18n'
 import { setLocaleHtmlAttr } from '@/localization'
@@ -23,6 +25,14 @@ if ( savedLocale ) {
   setLocaleHtmlAttr( locale.value )
 }
 // /LOCALIZATION
+
+
+
+// MEDIA -----------------------------------------------------------------------
+const { loadMediaPath } = useMedia()
+
+void loadMediaPath()
+// /MEDIA
 
 </script>
 
