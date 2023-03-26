@@ -163,66 +163,81 @@ const loadVehicleTypes = async () => {
 
 // VEHICLES --------------------------------------------------------------------
 
+// Vehicles Map
 const vehicles: Ref<Vehicles | undefined> = ref( undefined )
 
-const vehiclesFilteredArray: ComputedRef<Vehicle[]> = computed( () => {
+
+// Filtered Map
+const vehiclesFiltered: ComputedRef<Vehicles> = computed( () => {
   if ( !vehicles.value ) {
-    return []
+    return new Map() as Vehicles
   }
 
-  let result = Object.values( vehicles.value )
+  let result: Vehicles = new Map()
 
-  // Nation filter
-  if ( nation.value && nation.value !== 'all' ) {
-    result = result.filter( vehicle => {
-      return vehicle.nation === nation.value
-    } )
+  for ( let k of vehicles.value.keys() ) {
+    const vehicle = vehicles.value.get( k ) as Vehicle
 
-    // console.log( 'Filtered for: ', nation.value )
-  }
+    // Nation filter
+    if ( nation.value && vehicle.nation !== nation.value ) {
+      continue
+    }
 
-  // Type filter
-  if ( vehicleType.value ) {
-    result = result.filter( vehicle => {
-      return vehicle.tags.findIndex( ( vehicle: string ) => { 
+    // Type filter
+    if ( vehicleType.value ) {
+      const typeIndex = vehicle.tags.findIndex( ( vehicle: string ) => { 
         return vehicleType.value && ( vehicle.toLowerCase() === vehicleType.value.toLowerCase() )
-      } ) !== -1
-    } )
+      } )
+      
+      if ( typeIndex < 0 ) {
+        continue
+      }
+    }
 
-    // console.log( 'Filtered for: ', vehicleType.value )
-  }
+    if ( searchQuery.value ) {
+      if ( vehicle.localization.mark[ locale.value ]?.toLowerCase().indexOf( searchQuery.value?.toLowerCase() ) < 0 ) {
+        continue
+      }
+    }
 
-  // Search query
-  if ( searchQuery.value ) {
-    result = result.filter( vehicle => {
-      return vehicle.localization.mark[ locale.value ].toLowerCase().indexOf( searchQuery.value?.toLowerCase() ) > -1
-    } )
+    result.set( k, vehicle )
   }
 
   return result
 } )
 
 
-// Array of vehicle id's
-const vehiclesFilteredArrayKeys: ComputedRef<string[]> = computed( () => {
-  return Object.keys( vehiclesFilteredArray.value )
+// Filtered Array of Keys [ for faster index access in Slider ]
+const vehiclesFilteredKeys: ComputedRef<string[]> = computed( () => {
+  return Array.from( vehiclesFiltered.value, entry => entry[ 0 ] ) || []
 } )
+
+
+// Filtered Array of Values [ for virt scroll lib ]
+const vehiclesFilteredValues: ComputedRef<Vehicle[]> = computed( () => {
+  return Array.from( vehiclesFiltered.value, entry => entry[ 1 ] ) || []
+} )
+
 
 
 const loadVehicles = async () => {
   interface VehicleResponse {
-    data   : Vehicles
+    data   : {
+      [ id: number ]: Vehicle
+    }
     status : string
   }
 
   try {
     const { data } = await api.get<VehicleResponse>( 'vehicles' )
     if ( data.data ) {
+      /* Тут нужно кое что просериализировать ( */
       for ( let i in data.data ) {
         data.data[ i ].id = i
       }
-      vehicles.value = data.data
-      // console.log( 'Vehicles', vehicles.value )
+
+      vehicles.value = new Map( Object.entries( data.data ) )
+      console.log( 'Vehicles', vehicles.value )
     }
   } catch ( errors ) {
     console.log( errors )
@@ -237,6 +252,7 @@ const isSliderVisible: Ref<boolean> = ref( false )
 const sliderVehicles: Ref<Vehicle[] | undefined> = ref()
 
 const Swiper: Ref<SwiperInterface | null> = ref( null )
+const SwiperInitialSlide: Ref<number> = ref( 0 )
 
 const onSwiperInit = () => {
   const swiperEl = document.querySelector( 'swiper-container' ) as any
@@ -268,23 +284,29 @@ const handleSlidePrev = () => {
 
 
 // ..
-const showSlider = ( id: string ) => {
-  console.log( id )
+const sliderTresholdIndexes = [ 
+  -1, 
+  0, 
+  1, 
+]
 
-  if ( !vehicles.value ) {
+// ..
+const showSlider = ( id: string ) => {
+  if ( !vehiclesFiltered.value.size ) {
     return
   }
 
-  console.log( 'aaaa', vehiclesFilteredArray.value )
+  const filteredIndex = vehiclesFilteredKeys.value.indexOf( id )
 
-  const x = vehiclesFilteredArrayKeys.value.indexOf( id )
+  sliderVehicles.value = []
+  
+  for ( let i of sliderTresholdIndexes ) {
+    if ( vehiclesFilteredValues.value[ filteredIndex + i ] ) {
+      sliderVehicles.value.push( vehiclesFilteredValues.value[ filteredIndex + i ] )
+    }
+  }
 
-  console.log( 'index: ', x )
-
-  sliderVehicles.value = [ 
-    vehicles.value[ Number( id ) ],
-    vehicles.value[ Number( id ) ],
-  ]
+  SwiperInitialSlide.value = sliderVehicles.value.length >= 3 ? 1 : 0
 
   isSliderVisible.value = true
 }
@@ -420,10 +442,10 @@ onMounted( async () => {
       mode="out-in"
     >
       <Grid
-        v-if="vehiclesFilteredArray.length >= 1"
-        :length="vehiclesFilteredArray.length"
-        :page-provider="async () => vehiclesFilteredArray"
-        :page-size="vehiclesFilteredArray.length"
+        v-if="vehiclesFilteredValues.length >= 1"
+        :length="vehiclesFilteredValues.length"
+        :page-provider="async () => vehiclesFilteredValues"
+        :page-size="vehiclesFilteredValues.length"
         :respect-scroll-to-on-resize="true"
         class="vehicles"
       >
@@ -473,9 +495,9 @@ onMounted( async () => {
         </button>
         <swiper-container
           class="vehicle-slider-swiper"
-          :loop="true"
+          :loop="false"
           :slides-per-view="1" 
-          :initial-slide="0"
+          :initial-slide="SwiperInitialSlide"
           @init="onSwiperInit"
           @slidechange="onSwiperSlideChange"
         >
@@ -495,6 +517,9 @@ onMounted( async () => {
         <div class="vehicle-slide-navigation">
           <button 
             class="vehicle-slide-navigation-l"
+            :class="{
+              'disabled': Swiper?.isBeginning
+            }"
             @click="handleSlidePrev"
           >
             <svg
@@ -508,6 +533,9 @@ onMounted( async () => {
           </button>
           <button 
             class="vehicle-slide-navigation-r"
+            :class="{
+              'disabled': Swiper?.isEnd
+            }"
             @click="handleSlideNext"
           >
             <svg
@@ -818,6 +846,12 @@ $grid-breakpoint-xl: rem( 1680px );
   color: var(--color-text);
   appearance: none;
   background: transparent;
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: default;
+  }
 
   @media only screen and (min-width: #{ rem(966px) }) {
     width: calc( ( 100% - 870px ) / 2 );

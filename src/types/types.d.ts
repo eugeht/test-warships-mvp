@@ -85,8 +85,9 @@ export interface Vehicle {
 }
 
 
-export interface Vehicles {
-  [ propName: number ]: Vehicle
-}
+// export interface VehiclesObject {
+//   [ id: number ]: Vehicle
+// }
+export type Vehicles = Map<string, Vehicle>
 
 
