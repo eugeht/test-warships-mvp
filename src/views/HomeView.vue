@@ -316,12 +316,32 @@ const hideSlider = () => {
 }
 
 
-const onSwiperSlideChange = () => {
-  if ( !Swiper.value ) {
+const onSwiperSlidePrev = () => {
+  if ( !Swiper.value || !sliderVehicles.value?.length ) {
     return
   }
 
-  // ..
+  const firstId = sliderVehicles.value[ 0 ].id as string
+  const filteredIndex = vehiclesFilteredKeys.value.indexOf( firstId )
+
+  if ( vehiclesFilteredValues.value[ filteredIndex - 1 ] ) {
+    sliderVehicles.value.unshift( vehiclesFilteredValues.value[ filteredIndex - 1 ] )
+    Swiper.value.slideTo( Swiper.value.activeIndex + 1, 0 )
+  }
+}
+
+
+const onSwiperSlideNext = () => {
+  if ( !Swiper.value || !sliderVehicles.value?.length ) {
+    return
+  }
+
+  const lastId = sliderVehicles.value[ sliderVehicles.value?.length - 1 ].id as string
+  const filteredIndex = vehiclesFilteredKeys.value.indexOf( lastId )
+
+  if ( vehiclesFilteredValues.value[ filteredIndex + 1 ] ) {
+    sliderVehicles.value.push( vehiclesFilteredValues.value[ filteredIndex + 1 ] )
+  }
 }
 // /SLIDER
 
@@ -499,7 +519,8 @@ onMounted( async () => {
           :slides-per-view="1" 
           :initial-slide="SwiperInitialSlide"
           @init="onSwiperInit"
-          @slidechange="onSwiperSlideChange"
+          @slideprevtransitionend="onSwiperSlidePrev"
+          @slidenexttransitionstart="onSwiperSlideNext"
         >
           <swiper-slide
             v-for="( sliderVehicle ) in sliderVehicles"
