@@ -174,7 +174,7 @@
       </g>
 
 
-      <!-- Close -->
+      <!-- Small chevron -->
       <g id="svg-icon-chevron-compact">
         <path 
           fill="currentColor" 

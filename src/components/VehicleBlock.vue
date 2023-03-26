@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Vue
-import { ref, type Ref, defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits } from 'vue'
 // Types
 import type { Vehicle, VehicleTypes, Nations } from '@/types/types'
 // Utils
@@ -21,6 +21,11 @@ const props = defineProps<{
 
 
 
+// Emits
+const emit = defineEmits<{( e: 'open', value: string ): void }>()
+
+
+
 // Composables
 const { locale } = useI18n()
 
@@ -37,6 +42,15 @@ const getVehicleTypes = ( tags: string[] ) => {
     } )
 }
 
+
+const handleClick = () => {
+  if ( !props.vehicle || !props.vehicle.id ) {
+    return
+  }
+
+  emit( 'open', props.vehicle.id )
+}
+
 </script>
 
 
@@ -48,6 +62,8 @@ const getVehicleTypes = ( tags: string[] ) => {
       'vehicle--active': vehicle
     }"
     :style="style"
+    :title="vehicle?.localization.description[ locale ]"
+    @click="handleClick"
   >
     <div class="vehicle-image">
       <span
@@ -126,7 +142,7 @@ const getVehicleTypes = ( tags: string[] ) => {
 
   transition: 0.2s linear background;
 
-  border: 1px solid #9fb5fc29;
+  border: 1px solid #{ $color-lighterblue-a15 };
   border-radius: var(--input-border-radius);
   background: #{ $color-black-a15 };
 

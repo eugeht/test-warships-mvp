@@ -9,14 +9,23 @@ $font-family: 'Roboto', sans-serif;
 
 // Colors - blue
 $color-darkblue: #102031;
+$color-darkblue-a50: rgba(#102031, 0.5);
 $color-darkerblue: #222628;
 $color-lightblue: #6d82a3;
+$color-lighterblue: #9fb5fc;
+$color-lighterblue-a15: rgba($color-lighterblue, 0.15);
 $color-blue: #5884c4;
-$color-blue-a15: rgba(#5884c4, 0.15);
+$color-blue-a15: rgba($color-blue, 0.15);
+$color-intenseblue: #0f3455;
+$color-intenseblue-a70: rgba($color-intenseblue, 0.7);
+$color-intensedarkblue: #0d111d;
+$color-intensedarkblue-a75: rgba($color-intensedarkblue, 0.75);
+
 
 // Colors - white
 $color-white: #fff;
 $color-white-a50: rgba( $color-white, 0.5);
+$color-white-a15: rgba( $color-white, 0.15);
 $color-white-a06: rgba( $color-white, 0.06);
 
 // Colors - blacks and grays

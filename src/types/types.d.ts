@@ -53,6 +53,7 @@ export interface VehicleTypes {
 
 
 export interface Vehicle {
+  id?: string
   icons: {
     default: string // 214x126
     small: string // 214x126
