@@ -128,6 +128,8 @@ const handleClick = () => {
         </template>
       </header>
     </div>
+    <!-- debug -->
+    {{ vehicle?.id }}
   </div>
 </template>
 

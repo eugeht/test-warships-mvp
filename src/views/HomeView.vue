@@ -165,7 +165,7 @@ const loadVehicleTypes = async () => {
 
 const vehicles: Ref<Vehicles | undefined> = ref( undefined )
 
-const getVehicles: ComputedRef<Vehicle[]> = computed( () => {
+const vehiclesFilteredArray: ComputedRef<Vehicle[]> = computed( () => {
   if ( !vehicles.value ) {
     return []
   }
@@ -200,6 +200,12 @@ const getVehicles: ComputedRef<Vehicle[]> = computed( () => {
   }
 
   return result
+} )
+
+
+// Array of vehicle id's
+const vehiclesFilteredArrayKeys: ComputedRef<string[]> = computed( () => {
+  return Object.keys( vehiclesFilteredArray.value )
 } )
 
 
@@ -269,6 +275,12 @@ const showSlider = ( id: string ) => {
     return
   }
 
+  console.log( 'aaaa', vehiclesFilteredArray.value )
+
+  const x = vehiclesFilteredArrayKeys.value.indexOf( id )
+
+  console.log( 'index: ', x )
+
   sliderVehicles.value = [ 
     vehicles.value[ Number( id ) ],
     vehicles.value[ Number( id ) ],
@@ -298,17 +310,19 @@ onMounted( async () => {
   // Swiper - register swiper
   register()
 
-  // Loading media path
-  await loadMediaPath()
+  // Send requests
+  await Promise.all( [
+    // Loading media path
+    loadMediaPath(),
+    // Loading nations
+    loadNations(),
+    // Loading vehicle types
+    loadVehicleTypes(),
+    // Loading vehicles
+    loadVehicles(),
+  ] )
 
-  // Loading nations
-  await loadNations()
-
-  // Loading vehicle types
-  await loadVehicleTypes()
-
-  // Loading vehicles
-  await loadVehicles()
+  // ..
 } )
 </script>
 
@@ -406,10 +420,10 @@ onMounted( async () => {
       mode="out-in"
     >
       <Grid
-        v-if="getVehicles.length >= 1"
-        :length="getVehicles.length"
-        :page-provider="async () => getVehicles"
-        :page-size="getVehicles.length"
+        v-if="vehiclesFilteredArray.length >= 1"
+        :length="vehiclesFilteredArray.length"
+        :page-provider="async () => vehiclesFilteredArray"
+        :page-size="vehiclesFilteredArray.length"
         :respect-scroll-to-on-resize="true"
         class="vehicles"
       >
@@ -483,13 +497,27 @@ onMounted( async () => {
             class="vehicle-slide-navigation-l"
             @click="handleSlidePrev"
           >
-            <svg class="vehicle-slide-navigation__icon" width="24" height="10" viewBox="0 120 512 250" fill="none" xmlns="http://www.w3.org/2000/svg"><use xlink:href="#svg-icon-chevron-compact"></use></svg>
+            <svg
+              class="vehicle-slide-navigation__icon"
+              width="24"
+              height="10"
+              viewBox="0 120 512 250"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            ><use xlink:href="#svg-icon-chevron-compact" /></svg>
           </button>
           <button 
             class="vehicle-slide-navigation-r"
             @click="handleSlideNext"
           >
-            <svg class="vehicle-slide-navigation__icon" width="24" height="10" viewBox="0 120 512 250" fill="none" xmlns="http://www.w3.org/2000/svg"><use xlink:href="#svg-icon-chevron-compact"></use></svg>
+            <svg
+              class="vehicle-slide-navigation__icon"
+              width="24"
+              height="10"
+              viewBox="0 120 512 250"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            ><use xlink:href="#svg-icon-chevron-compact" /></svg>
           </button>
         </div>
       </div>
