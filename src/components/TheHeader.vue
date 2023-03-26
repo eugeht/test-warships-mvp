@@ -103,12 +103,12 @@ $header-logo-breakpoint: #{ rem(420px) };
 .the-header__container {
   position: relative;
 
-  margin: 0 var(--gap-h-sm);
+  margin: 0 #{ rem(16px) };
 }
 
 
 .the-header-nav {
-  padding: var(--gap-h-sm) 0;
+  padding: #{ rem(16px) } 0;
 
   display: flex;
 
@@ -160,19 +160,20 @@ $header-logo-breakpoint: #{ rem(420px) };
 
 .the-header-lang-btn {
   display: flex;
-  padding: var(--gap-h-sm);
-  margin: calc(-1 * var(--gap-h-sm));
+  padding: #{ rem(16px) };
+  margin: #{ rem(-16px) };
 
   flex-direction: row;
   align-items: center;
 
-  color: var(--color-text-a50);
-
   transition: color 0.1s linear, background 0.1s linear;
+
+  border: none;
+
+  color: var(--color-text-a50);
   cursor: pointer;
   appearance: none;
   background: none;
-  border: none;
 
   .the-header-lang.the-header-lang--active &,
   &:hover {
@@ -185,6 +186,7 @@ $header-logo-breakpoint: #{ rem(420px) };
 
 .the-header-lang-btn__arrow {
   margin-left: rem(8px);
+
   transition: transform 0.2s linear;
 
   .the-header-lang.the-header-lang--active & {
@@ -197,10 +199,11 @@ $header-logo-breakpoint: #{ rem(420px) };
   position: absolute;
   top: 100%;
   right: 0;
-  z-index: 100;
 
-  margin-top: var(--gap-h-sm);
-  margin-right: calc( -1 * var(--gap-h-sm) );
+  margin-top: #{ rem(16px) };
+  margin-right: #{ rem(-16px) };
+
+  z-index: 1000;
   background: var(--color-header-hover);
 }
 

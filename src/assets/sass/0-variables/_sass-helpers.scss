@@ -1,0 +1,29 @@
+
+
+// Rem ratio default size
+$default-scaling-font-size: 16px;
+
+// Rem easy calculations
+@function rem( $pxValue ) {
+  // @return #{ math.div( strip-unit( $pxValue ) , strip-unit( $default-scaling-font-size ) ) }rem;
+  @return #{ math.div( $pxValue , $default-scaling-font-size ) }rem;
+}
+
+
+
+// Remove scrollbar
+@mixin no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar,
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-thumb {
+    display: none;
+
+    background: transparent;
+  }
+}

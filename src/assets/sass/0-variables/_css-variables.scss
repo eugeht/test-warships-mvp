@@ -3,17 +3,34 @@
 */
 
 :root {
-  --color-bg: #102031;
-  --color-text: #fff;
-  --color-text-a50: #{ rgba( #fff, 0.5 ) };
-  --color-header: #333;
-  --color-header-hover: #434343;
-  --color-input-bg: #{ rgba( #fff, 0.06 ) };
-  --input-border-radius: #{ rem(4px) };
+  // Colors - main
+  --color-bg: #{ $color-darkblue };
+
+  // Colors - text
+  --color-text: #{ $color-white };
+  --color-text-a50: #{ $color-white-a50 };
+  --color-text-active: #{ $color-yellow };
+  --color-text-hint: #{ $color-lightblue };
+
+  // Colors - header
+  --color-header: #{ $color-gray };
+  --color-header-hover: #{ $color-gray-lighter };
+
+  // Colors - navbar
+  --color-navbar: #{ $color-darkgray-a80 };
+
+  // Colors - inputs
+  --color-input-bg: #{ $color-white-a06 };
+
+
+
+  // Border-radius
+  --input-border-radius: #{ $border-radius };
+  --input-border-radius-inner: #{ $border-radius-inner };
+
+  // Spacings
   --input-font-size: #{ rem(16px) };
   --input-line-height: #{ rem(16px) };
   --input-padding: #{ rem(4px) } #{ rem(24px) } #{ rem(4px) } #{ rem(8px) };
   --input-div-padding: #{ rem(6px) } #{ rem(24px) } #{ rem(6px) } #{ rem(8px) };
-  --gap-h-sm: #{ rem(16px) };
-  --color-navbar: #161616cf;
 }

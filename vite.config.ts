@@ -20,6 +20,7 @@ export default defineConfig( {
           @use "sass:math";
           @use "sass:map";
           @use "sass:string";
+          @import "@/assets/sass/0-variables/_sass-helpers.scss";
           @import "@/assets/sass/0-variables/_sass-variables.scss";
         `,
       },

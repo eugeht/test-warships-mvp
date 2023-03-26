@@ -99,12 +99,51 @@ module.exports = {
         "emptyLineBefore": "always",
         "order": "flexible",
         "properties": [
+          "z-index",
+          "isolation",
+        ]
+      },
+      {
+        "emptyLineBefore": "always",
+        "order": "flexible",
+        "properties": [
+          "transition",
+          "transform",
+        ]
+      },
+      {
+        "emptyLineBefore": "always",
+        "order": "flexible",
+        "properties": [
+          "border",
+          "border-radius",
+          "border-color",
+          "border-width",
+        ]
+      },
+      {
+        "emptyLineBefore": "always",
+        "order": "flexible",
+        "properties": [
           "order",
           "flex",
           "flex-grow",
           "flex-shrink",
           "flex-basis",
           "align-self"
+        ]
+      },
+      {
+        "emptyLineBefore": "always",
+        "order": "flexible",
+        "properties": [
+          "color",
+          "font-family",
+          "font-weight",
+          "font-size",
+          "line-height",
+          "white-space",
+          "text-overflow",
         ]
       }
     ], { "unspecified": "bottom" }]

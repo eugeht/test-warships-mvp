@@ -12,11 +12,11 @@ import { useI18n } from 'vue-i18n'
 
 // Props
 const props = defineProps<{
-  vehicle      : Vehicle
-  nations      : Nations
-  mediaPath   : string
-  vehicleTypes : VehicleTypes
-  style?       : any
+  vehicle?      : Vehicle
+  nations?      : Nations
+  mediaPath?    : string
+  vehicleTypes? : VehicleTypes
+  style?        : any
 }>()
 
 
@@ -44,6 +44,9 @@ const getVehicleTypes = ( tags: string[] ) => {
 <template>
   <div 
     class="vehicle"
+    :class="{
+      'vehicle--active': vehicle
+    }"
     :style="style"
   >
     <div class="vehicle-image">
@@ -52,6 +55,7 @@ const getVehicleTypes = ( tags: string[] ) => {
         class="vehicle-nation"
       >
         <img 
+          v-if="vehicle"
           class="vehicle-nation__icon"
           :src="`${ mediaPath }${ nations[ vehicle.nation ].icons.default }`"
           :alt="nations[ vehicle.nation ].localization.mark[ locale ]"
@@ -60,31 +64,8 @@ const getVehicleTypes = ( tags: string[] ) => {
           height="126"
         >
       </span>
-      <img 
-        :src="`${ mediaPath }${ vehicle.icons.medium }`"
-        class="vehicle-image__img"
-        :alt="vehicle.localization.mark[ locale ]"
-        :title="vehicle.localization.mark[ locale ]"
-        loading="lazy"
-        width="435"
-        height="256"
-      >
-    </div>
-    <div class="vehicle-body">
-      <header class="vehicle-header">
-        <small>
-          <template v-if="vehicle.level > 10">
-            ★
-          </template>
-          <template v-else>
-            {{ integerToRoman( vehicle.level ) }}
-          </template>
-        </small>
-
-        {{ vehicle.localization.mark[ locale ] }}
-      </header>
       <template 
-        v-if="vehicleTypes"
+        v-if="vehicleTypes && vehicle"
       >
         <aside
           v-for="v in getVehicleTypes( vehicle.tags )"
@@ -102,6 +83,34 @@ const getVehicleTypes = ( tags: string[] ) => {
           >
         </aside>
       </template>
+      <img 
+        v-if="vehicle"
+        :src="`${ mediaPath }${ vehicle.icons.medium }`"
+        class="vehicle-image__img"
+        :alt="vehicle.localization.mark[ locale ]"
+        :title="vehicle.localization.mark[ locale ]"
+        loading="lazy"
+        width="435"
+        height="256"
+      >
+    </div>
+    <div class="vehicle-body">
+      <header class="vehicle-header">
+        <template v-if="vehicle">
+          <small>
+            <template v-if="vehicle.level > 10">
+              ★
+            </template>
+            <template v-else>
+              {{ integerToRoman( vehicle.level ) }}
+            </template>
+          </small>
+          {{ vehicle.localization.mark[ locale ] }}
+        </template>
+        <template v-else>
+          &nbsp;
+        </template>
+      </header>
     </div>
   </div>
 </template>
@@ -112,33 +121,59 @@ const getVehicleTypes = ( tags: string[] ) => {
 
 .vehicle {
   position: relative;
-  overflow: hidden;
-  background: #00000029;
+
+  min-width: 0;
+
+  transition: 0.2s linear background;
+
   border: 1px solid #9fb5fc29;
-  border-radius: 4px;
+  border-radius: var(--input-border-radius);
+  background: #{ $color-black-a15 };
+
+  &.vehicle--active {
+    cursor: zoom-in;
+
+    &:hover {
+      background: #{$color-blue-a15};
+    }
+  }
 } 
+
 
 .vehicle-image {
   position: relative;
   aspect-ratio: 20 / 10;
+  pointer-events: none;
 
   &::after {
     content: "";
+
     position: absolute;
     bottom: 0;
     left: 0;
+
     width: 100%;
     height: 22%;
-    background: rgba(0, 0, 0, 0.1607843137);
+    background: #{ $color-black-a15 };
   }
+}
 
-  .vehicle-image__img {
-    width: 100%;
-    height: auto;
-    pointer-events: none;
-    position: absolute;
-    bottom: 0;
-    left: 0;
+.vehicle-image__img {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+  width: 100%;
+  height: auto;
+
+  z-index: 1;
+
+  transition: transform 0.2s linear;
+  pointer-events: none;
+  transform-origin: 50% 75%;
+
+  .vehicle.vehicle--active:hover & {
+    transform: scale(1.02);
   }
 }
 
@@ -146,58 +181,77 @@ const getVehicleTypes = ( tags: string[] ) => {
   position: absolute;
   top: #{ rem( 16px ) };
   left: #{ rem( 16px ) };
+
   width: 18%;
+
   z-index: 1;
   cursor: help;
-
-  .vehicle-nation__icon {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
 }
 
-
-.vehicle-body {
-  background: #00000029;
-  border-radius: 0 0 2px 2px;
-  padding: #{rem(6px)} #{rem(16px)} #{rem(12px)} #{rem(16px)};
-
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-end;
+.vehicle-nation__icon {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
-.vehicle-header {
-  font-family: $font-family-condensed;
-  font-weight: 700;
-  font-size: #{ rem(20px) };
-  text-align: left;
-
-  small {
-    color: #AD7A07;
-    font-size: 75%;
-  }
-}
 
 
 .vehicle-type {
-  display: inline-block;
-  vertical-align: top;
+  position: absolute;
+  top: #{ rem( 8px ) };
+  right: #{ rem( 16px ) };
+
   font-weight: 400;
   font-family: $font-family-condensed;
   font-size: #{ rem(14px) };
   line-height: 1;
 
-  color: #6d82a3;
+  color: var(--color-text-hint);
+}
 
-  .vehicle-type__icon {
+.vehicle-type__icon {
+  display: inline-block;
+  width: 27px;
+  height: 27px;
+  margin: #{rem(1px)} #{rem(-1px)} #{rem(2px)} 0 ;
+  vertical-align: middle;
+}
+
+
+.vehicle-body {
+  display: flex;
+  padding: #{rem(6px)} #{rem(16px)} #{rem(12px)} #{rem(16px)};
+
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  border-radius: 0 0 var(--input-border-radius-inner) var(--input-border-radius-inner);
+  background: #{ $color-black-a15 };
+
+  .vehicle.vehicle--active:hover & {
+    background: #{ $color-black-a15 };
+  }
+}
+
+.vehicle-header {
+  width: 100%;
+  overflow: hidden;
+
+  font-family: $font-family-condensed;
+  font-weight: 700;
+  font-size: #{ rem(20px) };
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: left;
+
+  small {
     display: inline-block;
+    margin-right: #{rem(2px)};
+
+    font-size: 75%;
+    color: var(--color-text-active);
     vertical-align: middle;
-    width: 27px;
-    height: 27px;
-    margin: #{rem(-3px)} 0 #{rem(-3px)} #{rem(2px)};
   }
 }
 

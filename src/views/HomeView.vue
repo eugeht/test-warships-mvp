@@ -195,8 +195,6 @@ const getVehicles: ComputedRef<Vehicle[]> = computed( () => {
     } )
   }
 
-  // console.log( 'Filtered vehicles: ', result )
-
   return result
 } )
 
@@ -325,58 +323,59 @@ onMounted( async () => {
     v-if="vehicles && vehicleTypes && nations && mediaPath"
     class="vehicles-grid"
   >
-    <!-- :page-provider="async (pageNumber, pageSize) => Array(pageSize).fill('x')" -->
-    <Grid
-      :length="getVehicles.length"
-      :page-provider="async () => getVehicles"
-      :page-size="getVehicles.length || 1"
-      :respect-scroll-to-on-resize="true"
-      class="vehicles"
+    <transition 
+      name="component-fade" 
+      mode="out-in"
     >
-      <template #probe>
-        <div 
-          class="vehicle"
-          sizes="(min-width: 768px) 360px, 290px"
-        >
-          asdasd
-        </div>
-      </template>
+      <Grid
+        v-if="getVehicles.length >= 1"
+        :length="getVehicles.length"
+        :page-provider="async () => getVehicles"
+        :page-size="getVehicles.length"
+        :respect-scroll-to-on-resize="true"
+        class="vehicles"
+      >
+        <template #probe>
+          <VehicleBlock />
+        </template>
 
-      <template #placeholder="{ style }">
-        <div 
-          class="vehicle"
-          :style="style" 
-          sizes="(min-width: 768px) 360px, 290px"
-        >
-          ..
-        </div>
-      </template>
+        <template #placeholder>
+          <VehicleBlock />
+        </template>
 
-      <template #default="{ item, style }">
-        <VehicleBlock 
-          :vehicle="item"
-          :style="style"
-          :nations="nations"
-          :vehicle-types="vehicleTypes"
-          :media-path="mediaPath"
-        />
-      </template>
-    </Grid>
+        <template #default="{ item, style }">
+          <VehicleBlock 
+            :vehicle="item"
+            :style="style"
+            :nations="nations"
+            :vehicle-types="vehicleTypes"
+            :media-path="mediaPath"
+          />
+        </template>
+      </Grid>
+    </transition>
   </div>
 </template>
 
 
 
 <style lang="scss">
+// Breakpoints - filters
+$home-filters-breakpoint-md: rem( 640px );
+$home-filters-breakpoint-lg: rem( 800px );
+
+// Breakpoints - grid
+$grid-breakpoint-sm: rem( 600px );
+$grid-breakpoint-md: rem( 1000px );
+$grid-breakpoint-lg: rem( 1280px );
+$grid-breakpoint-xl: rem( 1680px );
+
+
 
 // FILTERS ---------------------------------------------------------------------
-$home-filters-breakpoint-md: #{ rem( 640px ) };
-$home-filters-breakpoint-lg: #{ rem( 800px ) };
-
-
-
 .home-filters {
   position: relative;
+
   z-index: 100;
 }
 
@@ -390,13 +389,15 @@ $home-filters-breakpoint-lg: #{ rem( 800px ) };
   gap: #{rem(8px)};
 
   @media only screen and (min-width: #{ $home-filters-breakpoint-md }) {
+    padding: #{ rem(10px) } #{ rem(16px) };
+
     flex-direction: row;
     gap: #{rem(16px)};
   }
 
   &.home-filters__layout--hidden {
     overflow: hidden;
-    height: #{rem(0px)};
+    height: 0;
     padding: 0;
     border-top: #{rem(8px)} solid var(--color-navbar);
   }
@@ -427,14 +428,16 @@ $home-filters-breakpoint-lg: #{ rem( 800px ) };
   height: 1.8em;
   padding: var(--input-padding);
   margin: 0;
+
   border: none;
-  background: var(--color-input-bg);
   border-radius: var(--input-border-radius);
-  vertical-align: top;
+
+  color: var(--color-text);
 
   font-size: var(--input-font-size);
-  color: var(--color-text);
   line-height: var(--input-line-height);
+  background: var(--color-input-bg);
+  vertical-align: top;
 }
 
 
@@ -446,9 +449,11 @@ $home-filters-breakpoint-lg: #{ rem( 800px ) };
   height: 100%;
   padding: 0 #{ rem(4px) };
   margin: 0;
-  background: none;
+
   border: none;
+
   color: var(--color-text);
+  background: none;
   opacity: 0.65;
   cursor: pointer;
 
@@ -467,31 +472,34 @@ $home-filters-breakpoint-lg: #{ rem( 800px ) };
 .home-filters-shrink-btn {
   position: absolute;
   top: 100%;
-  background: var(--color-navbar);
-  color: var(--color-text);
   left: 50%;
-  transform: translate(-50%, 0);
-  appearance: none;
+
   padding: #{rem(2px)} #{rem(6px)};
   margin: 0;
+
+  transform: translate(-50%, 0);
+
   border: none;
-  cursor: pointer;
   border-radius: 0 0 var(--input-border-radius) var(--input-border-radius);
 
+  color: var(--color-text);
+  background: var(--color-navbar);
+  appearance: none;
+  cursor: pointer;
+
   @media only screen and (min-width: #{ $home-filters-breakpoint-md }) {
-    left: auto;
-    transform: none;
     right: #{rem(6px)};
+    left: auto;
+
+    transform: none;
   }
 
 
   &::before {
     content: '';
+
     position: absolute;
-    top: #{rem(-8px)};
-    right: #{rem(-8px)};
-    bottom: #{rem(-8px)};
-    left: #{rem(-8px)};
+    inset: #{rem(-8px)} #{rem(-8px)} #{rem(-8px)} #{rem(-8px)};
   }
 }
 
@@ -516,8 +524,10 @@ $home-filters-breakpoint-lg: #{ rem( 800px ) };
 // VEHICLES --------------------------------------------------------------------
 .vehicles-grid {
   padding: #{rem(16px)};
+
   // height: 800px;
   overflow: auto;
+
   flex: 0 1 auto;
 }
 
@@ -528,8 +538,20 @@ $home-filters-breakpoint-lg: #{ rem( 800px ) };
   grid-gap: 15px;
   grid-template-columns: repeat(1,1fr);
   
-  @media only screen and (min-width: #{ rem(640px) }) {
+  @media only screen and (min-width: #{ $grid-breakpoint-sm }) {
+    grid-template-columns: repeat(2,1fr);
+  }
+
+  @media only screen and (min-width: #{ $grid-breakpoint-md }) {
     grid-template-columns: repeat(3,1fr);
+  }
+
+  @media only screen and (min-width: #{ $grid-breakpoint-lg }) {
+    grid-template-columns: repeat(4,1fr);
+  }
+
+  @media only screen and (min-width: #{ $grid-breakpoint-xl }) {
+    grid-template-columns: repeat(5,1fr);
   }
 } 
 

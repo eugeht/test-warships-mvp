@@ -194,20 +194,24 @@ const handleClear = () => {
   height: 1.8em;
   padding: var(--input-padding);
   margin: 0;
-  cursor: pointer;
+
   border: none;
-  background: var(--color-input-bg);
   border-radius: var(--input-border-radius);
 
-  font-size: var(--input-font-size);
   color: var(--color-text);
-  line-height: var(--input-line-height);
+
   font-family: $font-family-condensed;
+
+  font-size: var(--input-font-size);
+  line-height: var(--input-line-height);
+  cursor: pointer;
+  background: var(--color-input-bg);
 }
 
 
 .custom-select-value__value {
   display: block;
+
   line-height: 1.4;
 
   &.custom-select-value__value--placeholder {
@@ -220,6 +224,7 @@ const handleClear = () => {
   position: absolute;
   top: 50%;
   right: #{ rem( 5px ) };
+
   transform: translate(0, -50%);
   opacity: 0.5;
 }
@@ -239,32 +244,36 @@ const handleClear = () => {
   top: 100%;
   right: 0;
   left: 0;
-  z-index: 100;
 
   display: block;
   padding: #{ rem( 4px ) }  #{ rem( 8px ) };
   margin: #{ rem( 4px ) } #{ rem( -2px ) } 0;
-  list-style: none;
-  background: #222628;
+
+  z-index: 100;
+
   border-radius: var(--input-border-radius);
-  box-shadow: 0 #{ rem( 2px ) } #{ rem( 4px ) } #00000045;
+
   font-family: $font-family-condensed;
+  list-style: none;
+  background: #{ $color-darkerblue };
+  box-shadow: 0 #{ rem( 2px ) } #{ rem( 4px ) } #{ $color-black-a30 };
 }
 
 
 .custom-select-list__item {
   display: block;
   padding: #{ rem( 4px ) } #{ rem( 2px ) };
-  color: #ffffff7d;
-  cursor: pointer;
+
   font-size: #{rem(16px)};
+  color: var(--color-text-a50);
+  cursor: pointer;
 
   &.active {
-    color: #d39810;
+    color: var(--color-text-active);
   }
 
   &:not(.active):hover {
-    color: #fff;
+    color: var(--color-text);
   }
 }
 </style>

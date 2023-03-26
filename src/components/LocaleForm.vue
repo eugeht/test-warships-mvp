@@ -71,6 +71,7 @@ const setLocale = ( event: Event ) => {
 
 
 <style lang="scss">
+// Breakpoints - grid
 $locale-form-breakpoint: #{ rem(420px) };
 
 
@@ -81,6 +82,7 @@ $locale-form-breakpoint: #{ rem(420px) };
   display: flex;
 
   flex-flow: row wrap;
+
   white-space: nowrap;
   font-family: $font-family;
   font-weight: 400;
@@ -118,7 +120,7 @@ $locale-form-breakpoint: #{ rem(420px) };
 
   &:checked {
     & + .locale-form-label__text {
-      color: #d39810;
+      color: var(--color-text-active);
       opacity: 1;
     }
   }
