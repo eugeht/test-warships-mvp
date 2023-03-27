@@ -1,7 +1,5 @@
 // Vue
 import { createApp } from 'vue'
-// Store
-import { createPinia } from 'pinia'
 // Localization
 import { i18n } from '@/localization'
 // Components
@@ -22,13 +20,12 @@ app.config.errorHandler = ( error, instance, info ) => {
   console.error( 'Error', error, instance, info )
 }
 
+// Localization
+app.use( i18n )
 
-app
-  .use( createPinia() )
-  .use( i18n )
-
-
+// Click helper directive
 app.directive( 'click-outside', clickOutside )
 
 
+// Mount
 app.mount( '#app' )

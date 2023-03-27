@@ -12,8 +12,9 @@ import LogoLoader from '@/components/LogoLoader.vue'
 import CustomSelect from '@/components/CustomSelect.vue'
 import VehicleBlock from '@/components/VehicleBlock.vue'
 import VehicleSliderBlock from '@/components/VehicleSliderBlock.vue'
-// Media
+// Composables
 import { useMedia } from '@/composables/useMedia'
+import { useErrorAlert } from '@/composables/useErrorAlert'
 // Swiper
 import { register } from 'swiper/element/bundle'
 // Types
@@ -29,6 +30,7 @@ import type {
 // Composables
 const { locale, t } = useI18n()
 const { mediaPath } = useMedia()
+const { showAlert } = useErrorAlert()
 
 
 
@@ -105,8 +107,10 @@ const loadNations = async () => {
 
       // console.log( 'Nations', nations.value )
     }
-  } catch ( errors ) {
-    console.log( errors )
+  } catch ( error ) {
+    console.log( error )
+
+    showAlert( error )
   }
 }
 
@@ -156,8 +160,10 @@ const loadVehicleTypes = async () => {
         }, {} )
       // console.log( 'VehicleTypes', vehicleTypes.value )
     }
-  } catch ( errors ) {
-    console.log( errors )
+  } catch ( error ) {
+    console.log( error )
+
+    showAlert( error )
   }
 }
 
@@ -241,8 +247,10 @@ const loadVehicles = async () => {
       vehicles.value = new Map( Object.entries( data.data ) )
       // console.log( 'Vehicles', vehicles.value )
     }
-  } catch ( errors ) {
-    console.log( errors )
+  } catch ( error: unknown ) {
+    console.log( error )
+
+    showAlert( error )
   }
 }
 
