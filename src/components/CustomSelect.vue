@@ -14,7 +14,7 @@ defineProps<{
   value       : string | null
   showIcon?   : boolean
   mediaPath?  : string
-  options     : | VehicleTypes | Nations
+  options?    : | VehicleTypes | Nations
 }>()
 
 
@@ -69,13 +69,16 @@ const handleClear = () => {
   >
     <div 
       class="custom-select-value"
-      tabindex="0"
+      :class="{
+        loading: !options
+      }"
+      :tabindex="options ? 0 : undefined"
       @keypress.space="toggleDropdownVisible"
+      @click="options ? toggleDropdownVisible() : undefined"
     >
       <div 
-        v-if="value"
+        v-if="value && options"
         class="custom-select-value__value"
-        @click="toggleDropdownVisible"
       >
         <span 
           v-if="showIcon"
@@ -103,7 +106,6 @@ const handleClear = () => {
       <div 
         v-else
         class="custom-select-value__value custom-select-value__value--placeholder"
-        @click="toggleDropdownVisible"
       >
         {{ placeholder }}
       </div>
@@ -124,6 +126,17 @@ const handleClear = () => {
         </svg>
       </button>
       <svg
+        v-else-if="!options"
+        class="custom-select__loader"
+        width="18"
+        height="18"
+        viewBox="0 0 200 200"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <use xlink:href="#svg-icon-loader" />
+      </svg>
+      <svg
         v-else
         class="custom-select__arrow"
         width="16"
@@ -134,7 +147,7 @@ const handleClear = () => {
       </svg>
     </div>
     <ul 
-      v-if="isDropdownVisible"
+      v-if="isDropdownVisible && options"
       v-click-outside="toggleDropdownVisible"
       class="custom-select-list"
     >
@@ -207,6 +220,10 @@ const handleClear = () => {
   cursor: pointer;
   background: var(--color-input-bg);
 
+  &.loading {
+    cursor: wait;
+  }
+
   &:focus {
     outline: solid 2px var(--color-text-active);
     outline-offset: -2px;
@@ -229,9 +246,28 @@ const handleClear = () => {
   position: absolute;
   top: 50%;
   right: #{ rem( 5px ) };
+  pointer-events: none;
 
   transform: translate(0, -50%);
   opacity: 0.5;
+}
+
+
+.custom-select__loader {
+  position: absolute;
+  top: 50%;
+  right: #{ rem( 5px ) };
+
+  transform: translate(0, -50%);
+  opacity: 0.5;
+
+  animation: 2s linear custom-select-loader-rotate infinite;
+}
+
+@keyframes custom-select-loader-rotate {
+  to {
+    transform: translate(0, -50%) rotate(360deg);
+  }
 }
 
 

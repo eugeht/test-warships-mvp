@@ -380,10 +380,7 @@ onMounted( async () => {
         'home-filters__layout--hidden': !isFiltersVisible
       }"
     >
-      <div 
-        v-if="vehicleTypes"
-        class="home-filters-filter"
-      >
+      <div class="home-filters-filter">
         <CustomSelect 
           :placeholder="t('selectVehicleType')"
           :value="filterVehicleType"
@@ -395,10 +392,7 @@ onMounted( async () => {
         />
       </div>
 
-      <div 
-        v-if="nations"
-        class="home-filters-filter"
-      >
+      <div class="home-filters-filter">
         <CustomSelect 
           :placeholder="t('selectNation')"
           :value="filterNation"
