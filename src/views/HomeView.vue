@@ -343,6 +343,7 @@ const onSwiperSlideNext = () => {
 
   if ( vehiclesFilteredValues.value[ filteredIndex + 1 ] ) {
     sliderVehicles.value.push( vehiclesFilteredValues.value[ filteredIndex + 1 ] )
+    Swiper.value.isEnd = false
   }
 }
 // /SLIDER
@@ -364,7 +365,7 @@ onMounted( async () => {
     loadVehicles(),
   ] )
 
-  // ..
+  // Unset loader
   isLoading.value = false
 } )
 </script>
