@@ -112,7 +112,7 @@ const handleClear = () => {
       <button 
         v-if="value"
         class="home-filters-filter__btn"
-        @click="handleClear"
+        @click.stop="handleClear"
       >
         <svg
           class="home-filters-filter__icon"

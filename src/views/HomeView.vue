@@ -114,7 +114,7 @@ const loadNations = async () => {
 
 // VEHICLE TYPES ---------------------------------------------------------------
 // Current vehicle type
-const filterVehicleType: Ref<string | null> = ref( null )
+const filterVehicleType: Ref<string | null> = ref( localStorage.getItem( 'filterVehicleType' ) )
 
 
 // Set vehicle type and save
@@ -239,7 +239,7 @@ const loadVehicles = async () => {
       }
 
       vehicles.value = new Map( Object.entries( data.data ) )
-      console.log( 'Vehicles', vehicles.value )
+      // console.log( 'Vehicles', vehicles.value )
     }
   } catch ( errors ) {
     console.log( errors )
@@ -890,6 +890,10 @@ $grid-breakpoint-xl: rem( 1680px );
     .vehicle-slide-navigation__icon {
       opacity: 1;
     }
+  }
+
+  &:focus {
+    outline: none;
   }
 }
 

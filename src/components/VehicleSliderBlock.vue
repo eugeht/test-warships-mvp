@@ -5,6 +5,7 @@ import { defineProps } from 'vue'
 import type { Vehicle, VehicleTypes, Nations } from '@/types/types'
 // Utils
 import { integerToRoman } from '@/utils/typography'
+import { handleImageError } from '@/utils/images'
 // Localization
 import { useI18n } from 'vue-i18n'
 
@@ -38,6 +39,7 @@ const { locale } = useI18n()
           :title="vehicle.localization.mark[ locale ]"
           width="870"
           height="512"
+          @error="handleImageError"
         >
       </div>
       <div class="vehicle-slider-block-body">
