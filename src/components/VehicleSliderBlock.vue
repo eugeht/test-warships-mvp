@@ -78,6 +78,20 @@ const { locale } = useI18n()
             {{ vehicle.localization.description[ locale ] }}
           </span>
         </div>
+        <div 
+          v-if="vehicleTypes && vehicle?.vehicleType"
+          class="vehicle-slider-block-type"
+        >
+          {{ vehicleTypes[ vehicle.vehicleType ].localization.mark[ locale ] }}
+          <img 
+            class="vehicle-slider-block-type__icon"
+            :src="`${ mediaPath }${ vehicleTypes[ vehicle.vehicleType ].icons.default }`"
+            :alt="vehicleTypes[ vehicle.vehicleType ].localization.mark[ locale ]"
+            :title="vehicleTypes[ vehicle.vehicleType ].localization.mark[ locale ]"
+            width="27"
+            height="27"
+          >
+        </div>
       </div>
     </div>
   </div>
@@ -149,12 +163,8 @@ const { locale } = useI18n()
 }
 
 .vehicle-slider-block-body {
-  padding: 0 #{rem(24px)} #{rem(24px)} #{rem(24px)};
+  padding: 0 #{rem(24px)} #{rem(16px)} #{rem(24px)};
 }
-
-
-// .vehicle-slider-block-header {
-// }
 
 
 .vehicle-slider-block-header__title {
@@ -179,6 +189,19 @@ const { locale } = useI18n()
 
 .vehicle-slider-block-header__hint {
   color: var(--color-text-hint);
+}
+
+
+.vehicle-slider-block-type {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: #{rem(16px)} 0 0 0;
+}
+
+.vehicle-slider-block-type__icon {
+  margin-left: #{rem(2px)};
+  margin-bottom: #{rem(-2px)};
 }
 
 
