@@ -8,6 +8,7 @@ import Grid from 'vue-virtual-scroll-grid'
 // Localization
 import { useI18n } from 'vue-i18n'
 // Components
+import LogoLoader from '@/components/LogoLoader.vue'
 import CustomSelect from '@/components/CustomSelect.vue'
 import VehicleBlock from '@/components/VehicleBlock.vue'
 import VehicleSliderBlock from '@/components/VehicleSliderBlock.vue'
@@ -28,6 +29,11 @@ import type {
 // Composables
 const { locale, t } = useI18n()
 const { mediaPath } = useMedia()
+
+
+
+// State
+const isLoading: Ref<boolean> = ref( true )
 
 
 
@@ -64,6 +70,8 @@ const setFilterNation = ( value: string ) => {
   localStorage.setItem( 'filterNation', filterNation.value )
 }
 
+
+// Unset locale
 const unsetFilterNation = () => {
   filterNation.value = null
 
@@ -95,7 +103,7 @@ const loadNations = async () => {
           return acc
         }, {} )
 
-      console.log( 'Nations', nations.value )
+      // console.log( 'Nations', nations.value )
     }
   } catch ( errors ) {
     console.log( errors )
@@ -105,25 +113,33 @@ const loadNations = async () => {
 
 
 // VEHICLE TYPES ---------------------------------------------------------------
+// Current vehicle type
+const filterVehicleType: Ref<string | null> = ref( null )
 
-// @todo: save to localStorage
-const vehicleType: Ref<string | null> = ref( null )
 
-const setVehicleType = ( value: string ) => {
-  vehicleType.value = value
+// Set vehicle type and save
+const setFilterVehicleType = ( value: string ) => {
+  filterVehicleType.value = value
 
-  // localStorage.setItem( 'nation', nation.value )
+  // Save
+  localStorage.setItem( 'filterVehicleType', filterVehicleType.value )
 }
 
 
-const unsetVehicleType = () => {
-  vehicleType.value = null
+// Unset vehicle type and save
+const unsetFilterVehicleType = () => {
+  filterVehicleType.value = null
+
+  // Remove
+  localStorage.removeItem( 'filterVehicleType' )
 }
 
 
+// Vehicle types list
 const vehicleTypes: Ref<VehicleTypes | undefined> = ref()
 
 
+// Load vehicle types list
 const loadVehicleTypes = async () => {
   interface VehicleTypesResponse {
     data   : VehicleTypes
@@ -133,13 +149,12 @@ const loadVehicleTypes = async () => {
   try {
     const { data } = await api.get<VehicleTypesResponse>( 'vehicle_types_common' )
     if ( data.data ) {
-      // vehicleTypes.value = data.data
       vehicleTypes.value = Object.keys( data.data )
         .reduce( ( acc: VehicleTypes, key ) => {
           acc[ key.toLowerCase() ] = data.data[ key ]
           return acc
         }, {} )
-      console.log( 'VehicleTypes', vehicleTypes.value )
+      // console.log( 'VehicleTypes', vehicleTypes.value )
     }
   } catch ( errors ) {
     console.log( errors )
@@ -171,9 +186,9 @@ const vehiclesFiltered: ComputedRef<Vehicles> = computed( () => {
     }
 
     // Type filter
-    if ( vehicleType.value ) {
+    if ( filterVehicleType.value ) {
       const typeIndex = vehicle.tags.findIndex( ( vehicle: string ) => { 
-        return vehicleType.value && ( vehicle.toLowerCase() === vehicleType.value.toLowerCase() )
+        return filterVehicleType.value && ( vehicle.toLowerCase() === filterVehicleType.value.toLowerCase() )
       } )
       
       if ( typeIndex < 0 ) {
@@ -350,6 +365,7 @@ onMounted( async () => {
   ] )
 
   // ..
+  isLoading.value = false
 } )
 </script>
 
@@ -369,12 +385,12 @@ onMounted( async () => {
       >
         <CustomSelect 
           :placeholder="t('selectVehicleType')"
-          :value="vehicleType"
+          :value="filterVehicleType"
           :options="vehicleTypes"
           :show-icon="true"
           :media-path="mediaPath"
-          @select="$vehicleType => setVehicleType( $vehicleType )"
-          @clear="unsetVehicleType"
+          @select="$vehicleType => setFilterVehicleType( $vehicleType )"
+          @clear="unsetFilterVehicleType"
         />
       </div>
 
@@ -438,43 +454,51 @@ onMounted( async () => {
     </button>
   </nav>
 
-  <div 
-    v-if="vehicles && vehicleTypes && nations && mediaPath"
-    class="vehicles-grid"
+  <transition 
+    name="component-fade" 
+    mode="out-in"
   >
-    <transition 
-      name="component-fade" 
-      mode="out-in"
+    <LogoLoader
+      v-if="isLoading"
+    />
+    <div 
+      v-else-if="vehicles && vehicleTypes && nations && mediaPath"
+      class="vehicles-grid"
     >
-      <Grid
-        v-if="vehiclesFilteredValues.length >= 1"
-        :length="vehiclesFilteredValues.length"
-        :page-provider="async () => vehiclesFilteredValues"
-        :page-size="vehiclesFilteredValues.length"
-        :respect-scroll-to-on-resize="true"
-        class="vehicles"
+      <transition 
+        name="component-fade" 
+        mode="out-in"
       >
-        <template #probe>
-          <VehicleBlock />
-        </template>
+        <Grid
+          v-if="vehiclesFilteredValues.length >= 1"
+          :length="vehiclesFilteredValues.length"
+          :page-provider="async () => vehiclesFilteredValues"
+          :page-size="vehiclesFilteredValues.length"
+          :respect-scroll-to-on-resize="true"
+          class="vehicles"
+        >
+          <template #probe>
+            <VehicleBlock />
+          </template>
 
-        <template #placeholder>
-          <VehicleBlock />
-        </template>
+          <template #placeholder>
+            <VehicleBlock />
+          </template>
 
-        <template #default="{ item, style }">
-          <VehicleBlock 
-            :vehicle="item"
-            :style="style"
-            :nations="nations"
-            :vehicle-types="vehicleTypes"
-            :media-path="mediaPath"
-            @open="$vehicleId => showSlider( $vehicleId )"
-          />
-        </template>
-      </Grid>
-    </transition>
-  </div>
+          <template #default="{ item, style }">
+            <VehicleBlock 
+              :vehicle="item"
+              :style="style"
+              :nations="nations"
+              :vehicle-types="vehicleTypes"
+              :media-path="mediaPath"
+              @open="$vehicleId => showSlider( $vehicleId )"
+            />
+          </template>
+        </Grid>
+      </transition>
+    </div>
+  </transition>
 
   <Teleport to="body">
     <Transition name="component-fade-fast">
@@ -853,14 +877,14 @@ $grid-breakpoint-xl: rem( 1680px );
   appearance: none;
   background: transparent;
 
+  @media only screen and (min-width: #{ rem(966px) }) {
+    width: calc( ( 100% - 870px ) / 2 );
+  }
+
   &.disabled {
     opacity: 0.5;
     pointer-events: none;
     cursor: default;
-  }
-
-  @media only screen and (min-width: #{ rem(966px) }) {
-    width: calc( ( 100% - 870px ) / 2 );
   }
 
   .vehicle-slide-navigation__icon {
@@ -878,6 +902,7 @@ $grid-breakpoint-xl: rem( 1680px );
   position: absolute;
   top: 50%;
   left: 50%;
+
   width: 48px;
   height: 20px;
 

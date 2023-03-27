@@ -181,6 +181,57 @@
           d="M2.1,188.2c4.9-9.7,16.7-13.6,26.4-8.8l227.5,113.7l227.4-113.7c9.7-4.9,21.5-1.1,26.5,8.6s1.1,21.6-8.6,26.5   l-0.3,0.2L264.8,332.7c-5.6,2.8-12.1,2.8-17.6,0L10.9,214.6C1.2,209.7-2.8,197.9,2.1,188.2z"
         />
       </g>
+
+      <!-- Loader -->
+      <g id="svg-icon-loader">
+        <!-- viewBox="0 0 200 200" -->
+        <defs>
+          <linearGradient id="spinner-secondHalf">
+            <stop
+              offset="0%"
+              stop-opacity="0"
+              stop-color="currentColor"
+            />
+            <stop
+              offset="100%"
+              stop-opacity="0.5"
+              stop-color="currentColor"
+            />
+          </linearGradient>
+          <linearGradient id="spinner-firstHalf">
+            <stop
+              offset="0%"
+              stop-opacity="1"
+              stop-color="currentColor"
+            />
+            <stop
+              offset="100%"
+              stop-opacity="0.5"
+              stop-color="currentColor"
+            />
+          </linearGradient>
+        </defs>
+
+        <g stroke-width="8">
+          <path
+            stroke="url(#spinner-secondHalf)"
+            d="M 4 100 A 96 96 0 0 1 196 100"
+          />
+          <path
+            stroke="url(#spinner-firstHalf)"
+            d="M 196 100 A 96 96 0 0 1 4 100"
+          />
+        </g>
+      </g>
+
+      <!-- Logo -->
+      <g id="svg-icon-anchor">
+        <!-- viewBox="0 0 80 80" -->
+        <path
+          fill="currentColor"
+          d="M55,53c0,0,1.8,0.7,2.5,1.1c0.1,0.1,0.1,0.2,0,0.3c-3,2.8-5.9,4.6-10.5,4.6c-3.5,0-5-2.9-5-6V33h0.1L55,31v-2    l-1-1H42v-2l-1-1v-0.1c2.8-0.5,5-2.9,5-5.9c0-3.3-2.7-6-6-6s-6,2.7-6,6c0,3,2.2,5.4,5,5.9V25l-1,1v2H26l-1,1v2l13,2l0,0v20    c0,3.1-1.5,6-5,6c-4.6,0-7.5-1.8-10.5-4.6c-0.1-0.1-0.1-0.2,0-0.3C23.2,53.7,25,53,25,53c-1.2-0.8-6.2-4-8-7c0,0,0,0.7,0,1    c0.1,2,0.5,7.1,3,11c0,0,0.9-1.8,1.1-2.1c0.1-0.1,0.2-0.1,0.3,0c0.7,0.8,4.1,4.1,9.7,6.7c5.2,2.3,8.1,4,8.9,4.4    c0.8-0.5,3.7-2.1,8.9-4.4c5.6-2.6,9-5.9,9.7-6.7c0.1-0.1,0.2-0.1,0.3,0C59.1,56.2,60,58,60,58c2.5-3.9,2.9-9,3-11c0-0.3,0-1,0-1    C61.2,49,56.2,52.2,55,53z M36,19c0-2.2,1.8-4,4-4s4,1.8,4,4c0,1.8-1.2,3.3-2.8,3.8L42,22c0,0,0-2-2.1-2S38,22,38,22l0.8,0.8    C37.2,22.3,36,20.8,36,19z"
+        />
+      </g>
     </defs>
   </svg>
 </template>
