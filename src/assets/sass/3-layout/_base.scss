@@ -26,3 +26,9 @@ body {
 
   flex-direction: column;
 }
+
+input:focus,
+button:focus {
+  outline: solid 2px var(--color-text-active);
+  outline-offset: -2px;
+}

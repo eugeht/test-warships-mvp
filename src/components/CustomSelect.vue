@@ -206,6 +206,11 @@ const handleClear = () => {
   line-height: var(--input-line-height);
   cursor: pointer;
   background: var(--color-input-bg);
+
+  &:focus {
+    outline: solid 2px var(--color-text-active);
+    outline-offset: -2px;
+  }
 }
 
 
