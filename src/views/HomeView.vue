@@ -779,6 +779,12 @@ $grid-breakpoint-xl: rem( 1680px );
   overflow: auto;
 
   flex: 0 1 auto;
+
+  &::after {
+    content: '';
+    display: block;
+    height: #{rem(16px)};
+  }
 }
 
 .vehicles {
