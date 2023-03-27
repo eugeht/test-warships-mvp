@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// Vue
-import { defineProps } from 'vue'
 // Types
 import type { Vehicle, VehicleTypes, Nations } from '@/types/types'
 // Utils

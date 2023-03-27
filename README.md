@@ -1,7 +1,6 @@
 # test-project-warships-mvp
 
 Автор: eugennizamutdinov@gmail.com
-Время: ~16 часов
 
 ######Тестовое задание:
 ><small>Требуется создать веб-страницу, на которой можно посмотреть список кораблей, доступных в игре World of Warships.

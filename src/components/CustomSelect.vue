@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Vue
-import { ref, type Ref, defineProps, defineEmits } from 'vue'
+import { ref, type Ref } from 'vue'
 // Localization
 import { useI18n } from 'vue-i18n'
 // Types

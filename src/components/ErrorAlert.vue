@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// Vue
-import { defineProps } from 'vue'
 // Composables
 import { useErrorAlert } from '@/composables/useErrorAlert'
 

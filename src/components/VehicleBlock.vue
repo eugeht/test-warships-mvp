@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// Vue
-import { defineProps, defineEmits } from 'vue'
 // Types
 import type { Vehicle, VehicleTypes, Nations } from '@/types/types'
 // Utils
@@ -30,18 +28,6 @@ const emit = defineEmits<{( e: 'open', value: string ): void }>()
 // Composables
 const { locale } = useI18n()
 
-
-
-const getVehicleTypes = ( tags: string[] ) => {
-  tags.forEach( ( tag: string, i: number ) => {
-    tags[ i ] = tag.toLowerCase() 
-  } )
-
-  return tags
-    .filter( ( tag: string ) => {
-      return props.vehicleTypes && props.vehicleTypes[ tag ]
-    } )
-}
 
 
 const handleClick = () => {
@@ -82,19 +68,15 @@ const handleClick = () => {
         >
       </span>
       <template 
-        v-if="vehicleTypes && vehicle"
+        v-if="vehicleTypes && vehicle?.vehicleType"
       >
-        <aside
-          v-for="v in getVehicleTypes( vehicle.tags )"
-          :key="`vehicleType_${ vehicle.name }_${ v }`"
-          class="vehicle-type"
-        >
-          {{ vehicleTypes[ v ].localization.mark[ locale ] }}
+        <aside class="vehicle-type">
+          {{ vehicleTypes[ vehicle.vehicleType ].localization.mark[ locale ] }}
           <img 
             class="vehicle-type__icon"
-            :src="`${ mediaPath }${ vehicleTypes[ v ].icons.default }`"
-            :alt="vehicleTypes[ v ].localization.mark[ locale ]"
-            :title="vehicleTypes[ v ].localization.mark[ locale ]"
+            :src="`${ mediaPath }${ vehicleTypes[ vehicle.vehicleType ].icons.default }`"
+            :alt="vehicleTypes[ vehicle.vehicleType ].localization.mark[ locale ]"
+            :title="vehicleTypes[ vehicle.vehicleType ].localization.mark[ locale ]"
             width="27"
             height="27"
           >

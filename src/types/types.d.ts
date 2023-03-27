@@ -53,7 +53,10 @@ export interface VehicleTypes {
 
 
 export interface Vehicle {
-  id?: string
+  // Добавленные поля
+  id?          : string
+  vehicleType? : string
+
   icons: {
     default: string // 214x126
     small: string // 214x126

@@ -160,7 +160,7 @@ const loadVehicleTypes = async () => {
           acc[ key.toLowerCase() ] = data.data[ key ]
           return acc
         }, {} )
-      // console.log( 'VehicleTypes', vehicleTypes.value )
+      console.log( 'VehicleTypes', vehicleTypes.value )
     }
   } catch ( error ) {
     console.log( error )
@@ -185,6 +185,10 @@ const vehiclesFiltered: ComputedRef<Vehicles> = computed( () => {
     return new Map() as Vehicles
   }
 
+  if ( !filterNation.value && !filterVehicleType.value && !filterSearchQuery.value ) {
+    return vehicles.value
+  }
+
   let result: Vehicles = new Map()
 
   for ( let k of vehicles.value.keys() ) {
@@ -197,11 +201,7 @@ const vehiclesFiltered: ComputedRef<Vehicles> = computed( () => {
 
     // Type filter
     if ( filterVehicleType.value ) {
-      const typeIndex = vehicle.tags.findIndex( ( vehicle: string ) => { 
-        return filterVehicleType.value && ( vehicle.toLowerCase() === filterVehicleType.value.toLowerCase() )
-      } )
-      
-      if ( typeIndex < 0 ) {
+      if ( vehicle.vehicleType !== filterVehicleType.value ) {
         continue
       }
     }
@@ -244,8 +244,21 @@ const loadVehicles = async () => {
     const { data } = await api.get<VehicleResponse>( 'vehicles' )
     if ( data.data ) {
       /* Тут нужно кое что просериализировать ( */
+      const vehicleTypesValues = Object.keys( vehicleTypes.value || [] )
+
       for ( let i in data.data ) {
         data.data[ i ].id = i
+
+        if ( vehicleTypesValues.length ) {
+          data.data[ i ].tags.forEach( ( tag, tagIndex ) => {
+            tag = tag.toLocaleLowerCase()
+            data.data[ i ].tags[ tagIndex ] = tag
+            
+            if ( vehicleTypesValues.includes( tag )  ) {
+              data.data[ i ].vehicleType = tag
+            }
+          } )
+        }
       }
 
       vehicles.value = new Map( Object.entries( data.data ) )
@@ -375,9 +388,11 @@ onMounted( async () => {
     loadNations(),
     // Loading vehicle types
     loadVehicleTypes(),
-    // Loading vehicles
-    loadVehicles(),
   ] )
+
+  // Loading vehicles
+  /* этот отдельно, тк надо проинитить тип и нацию, чтоб быстро фильтрация работала потом */
+  await loadVehicles()
 
   // Unset loader
   isLoading.value = false
