@@ -1,11 +1,15 @@
+/*
+ * Это бы переписать на плагин по хорошему, чтоб не владывались композаблы.
+ */
+
 // Vue
 import { ref, type Ref, computed, type ComputedRef } from 'vue'
 
 
 // Alerts list
-const errorAlerts: Ref<unknown[]> = ref( [] )
+const errorAlerts: Ref<Error[]> = ref( [] )
 
-const errorAlert: ComputedRef<unknown | null> = computed( () => {
+const errorAlert: ComputedRef<Error | null> = computed( () => {
   if ( !errorAlerts.value.length ) {
     return null
   }
@@ -16,7 +20,7 @@ const errorAlert: ComputedRef<unknown | null> = computed( () => {
 
 // Composable
 export const useErrorAlert = () => {
-  const showAlert = ( error: unknown ) => {
+  const showAlert = ( error: Error ) => {
     errorAlerts.value.push( error )
   }
 

@@ -110,7 +110,9 @@ const loadNations = async () => {
   } catch ( error ) {
     console.log( error )
 
-    showAlert( error )
+    if ( error instanceof Error ) {
+      showAlert( error )
+    }
   }
 }
 
@@ -163,7 +165,9 @@ const loadVehicleTypes = async () => {
   } catch ( error ) {
     console.log( error )
 
-    showAlert( error )
+    if ( error instanceof Error ) {
+      showAlert( error )
+    }
   }
 }
 
@@ -250,7 +254,9 @@ const loadVehicles = async () => {
   } catch ( error: unknown ) {
     console.log( error )
 
-    showAlert( error )
+    if ( error instanceof Error ) {
+      showAlert( error )
+    }
   }
 }
 

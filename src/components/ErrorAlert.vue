@@ -8,7 +8,7 @@ import { useErrorAlert } from '@/composables/useErrorAlert'
 
 // Props
 defineProps<{
-  error : unknown
+  error : Error
 }>()
 
 
@@ -26,7 +26,7 @@ const { closeAlert } = useErrorAlert()
   >
     <div class="error-alert-body">
       <div class="error-alert-body-header">
-        <span v-if="error && typeof error === 'object' && 'name' in error">
+        <span v-if="error && ( typeof error === 'object' ) && ( 'name' in error )">
           {{ error.name }}
         </span>
         <button 
@@ -46,7 +46,7 @@ const { closeAlert } = useErrorAlert()
         </button>
       </div>
       <div class="error-alert-body-content">
-        <p v-if="error && typeof error === 'object' && 'message' in error">
+        <p v-if="error && ( typeof error === 'object' ) && ( 'message' in error )">
           {{ error.message }}
         </p>
       </div>

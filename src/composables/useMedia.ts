@@ -2,10 +2,17 @@
 import { ref, type Ref } from 'vue'
 // Api
 import { api } from '@/api'
+// Composables
+import { useErrorAlert } from '@/composables/useErrorAlert'
 
 
-//
+// Composable
+const { showAlert } = useErrorAlert()
+
+
+// State
 const mediaPath: Ref<string | undefined> = ref()
+
 
 
 // Composable
@@ -22,8 +29,10 @@ export const useMedia = () => {
         mediaPath.value = data.data
         // console.log( 'MediaPath', mediaPath )
       }
-    } catch ( errors ) {
-      console.log( errors )
+    } catch ( error ) {
+      if ( error instanceof Error ) {
+        showAlert( error )
+      }
     }
   }
 
