@@ -1,12 +1,10 @@
 // https://docs.cypress.io/api/introduction/api.html
 
-// describe( 'My First Test', () => {
-//   it( 'visits the app root url', () => {
-//     cy.visit( '/' )
-//     cy.contains( 'h1', 'You did it!' )
-//   } )
-// } )
-
-export default {
-  
+export default function() {
+  describe( 'Page loads', () => {
+    it( 'visits the app root url', () => {
+      cy.visit( '/' )
+      cy.find( '.the-header' )
+    } )
+  } )
 }
