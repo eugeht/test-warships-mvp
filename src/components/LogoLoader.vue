@@ -28,9 +28,17 @@
 
 
 <style lang="scss">
-// Loader
+
+
+@keyframes loader-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .logo-loader {
   position: relative;
+
   margin: auto;
   width: 80px;
   height: 80px;
@@ -40,6 +48,7 @@
   position: absolute;
   top: 0;
   left: 0;
+
   width: 100%;
   height: 100%;
 
@@ -50,13 +59,8 @@
   position: absolute;
   top: 0;
   left: 0;
+
   width: 100%;
   height: 100%;
-}
-
-@keyframes loader-rotate {
-  to {
-    transform: rotate(360deg);
-  }
-}
+}// Loader
 </style>

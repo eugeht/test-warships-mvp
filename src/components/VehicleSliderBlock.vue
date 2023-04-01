@@ -194,9 +194,11 @@ const { locale } = useI18n()
 
 .vehicle-slider-block-type {
   display: flex;
+
+  margin: #{rem(16px)} 0 0 0;
+
   flex-direction: row;
   align-items: center;
-  margin: #{rem(16px)} 0 0 0;
 }
 
 .vehicle-slider-block-type__icon {

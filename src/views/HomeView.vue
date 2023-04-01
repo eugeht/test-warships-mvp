@@ -748,6 +748,7 @@ $grid-breakpoint-xl: rem( 1680px );
 
   &::after {
     content: '';
+
     display: block;
     height: #{rem(16px)};
   }

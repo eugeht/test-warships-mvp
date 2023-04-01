@@ -246,9 +246,9 @@ const handleClear = () => {
   position: absolute;
   top: 50%;
   right: #{ rem( 5px ) };
-  pointer-events: none;
 
   transform: translate(0, -50%);
+  pointer-events: none;
   opacity: 0.5;
 }
 

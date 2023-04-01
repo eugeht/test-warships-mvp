@@ -61,22 +61,22 @@ const { closeAlert } = useErrorAlert()
   top: 0;
   left: 0;
 
+  display: flex;
+
   width: 100%;
   height: 100%;
 
   z-index: 100000;
   background: #{ $color-intensedarkblue-a75 };
   backdrop-filter: blur(4px);
-
-  display: flex;
 }
 
 .error-alert-body {
+  max-width: 90%;
+  min-width: 280px;
   margin: auto;
   background: var(--color-bg);
   box-shadow: 0 #{ rem( 2px ) } #{ rem( 4px ) } #{ $color-black-a30 };
-  min-width: 280px;
-  max-width: 90%;
 }
 
 .error-alert-body-close {
@@ -116,6 +116,7 @@ const { closeAlert } = useErrorAlert()
 
 .error-alert-body-header {
   position: relative;
+
   padding: #{rem(10px)};
   background: #{ $color-red };
 }
@@ -123,6 +124,7 @@ const { closeAlert } = useErrorAlert()
 .error-alert-body-content {
   padding: #{rem(10px)};
 }
+
 // /ERROR ALERT
 
 </style>

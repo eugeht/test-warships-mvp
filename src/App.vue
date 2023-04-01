@@ -80,8 +80,10 @@ void loadMediaPath()
   overflow: auto;
 
   flex-direction: column;
+
   flex: 1 1 auto;
 }
+
 // /PAGE
 
 </style>
