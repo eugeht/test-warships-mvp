@@ -2,8 +2,8 @@
 // Vue
 import { ref, type Ref, computed, type ComputedRef, onMounted } from 'vue'
 // Api
-import { api } from '@/api'
 import nationsApi from '@/api/nations.api'
+import vehiclesApi from '@/api/vehicles.api'
 // Virtual scroll
 import Grid from 'vue-virtual-scroll-grid'
 // Localization
@@ -93,9 +93,12 @@ const loadNations = async () => {
 
   if ( data ) {
     nations.value = data
-  } else if ( error instanceof Error ) {
-    showAlert( error )
+
     return
+  } 
+
+  if ( error ) {
+    showAlert( error as Error )
   }
 }
 
@@ -130,27 +133,16 @@ const vehicleTypes: Ref<VehicleTypes | undefined> = ref()
 
 // Load vehicle types list
 const loadVehicleTypes = async () => {
-  interface VehicleTypesResponse {
-    data   : VehicleTypes
-    status : string
+  const { data, error } = await vehiclesApi.getVehicleTypes()
+
+  if ( data ) {
+    vehicleTypes.value = data
+
+    return
   }
 
-  try {
-    const { data } = await api.get<VehicleTypesResponse>( 'vehicle_types_common' )
-    if ( data.data ) {
-      vehicleTypes.value = Object.keys( data.data )
-        .reduce( ( acc: VehicleTypes, key ) => {
-          acc[ key.toLowerCase() ] = data.data[ key ]
-          return acc
-        }, {} )
-      console.log( 'VehicleTypes', vehicleTypes.value )
-    }
-  } catch ( error ) {
-    console.log( error )
-
-    if ( error instanceof Error ) {
-      showAlert( error )
-    }
+  if ( error ) {
+    showAlert( error as Error )
   }
 }
 
@@ -216,43 +208,34 @@ const vehiclesFilteredValues: ComputedRef<Vehicle[]> = computed( () => {
 
 
 const loadVehicles = async () => {
-  interface VehicleResponse {
-    data   : {
-      [ id: number ]: Vehicle
+  const { data, error } = await vehiclesApi.getVehicles()
+
+  if ( data ) {
+    /* Тут нужно кое что просериализировать ( */
+    const vehicleTypesValues = Object.keys( vehicleTypes.value || [] )
+
+    for ( let i in data ) {
+      data[ i ].id = i
+
+      if ( vehicleTypesValues.length ) {
+        data[ i ].tags.forEach( ( tag, tagIndex ) => {
+          tag = tag.toLocaleLowerCase()
+          data[ i ].tags[ tagIndex ] = tag
+          
+          if ( vehicleTypesValues.includes( tag )  ) {
+            data[ i ].vehicleType = tag
+          }
+        } )
+      }
     }
-    status : string
+
+    vehicles.value = new Map( Object.entries( data ) )
+
+    return
   }
 
-  try {
-    const { data } = await api.get<VehicleResponse>( 'vehicles' )
-    if ( data.data ) {
-      /* Тут нужно кое что просериализировать ( */
-      const vehicleTypesValues = Object.keys( vehicleTypes.value || [] )
-
-      for ( let i in data.data ) {
-        data.data[ i ].id = i
-
-        if ( vehicleTypesValues.length ) {
-          data.data[ i ].tags.forEach( ( tag, tagIndex ) => {
-            tag = tag.toLocaleLowerCase()
-            data.data[ i ].tags[ tagIndex ] = tag
-            
-            if ( vehicleTypesValues.includes( tag )  ) {
-              data.data[ i ].vehicleType = tag
-            }
-          } )
-        }
-      }
-
-      vehicles.value = new Map( Object.entries( data.data ) )
-      // console.log( 'Vehicles', vehicles.value )
-    }
-  } catch ( error: unknown ) {
-    console.log( error )
-
-    if ( error instanceof Error ) {
-      showAlert( error )
-    }
+  if ( error ) {
+    showAlert( error as Error )
   }
 }
 

@@ -34,7 +34,7 @@ export const getNations = async () => {
       data: preparedData,
     }
 
-    // console.log( 'Nations', nations.value )
+    // console.log( 'Nations', preparedData )
   } catch ( error ) {
     return { error }
   }
