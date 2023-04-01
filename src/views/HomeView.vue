@@ -3,6 +3,7 @@
 import { ref, type Ref, computed, type ComputedRef, onMounted } from 'vue'
 // Api
 import { api } from '@/api'
+import nationsApi from '@/api/nations.api'
 // Virtual scroll
 import Grid from 'vue-virtual-scroll-grid'
 // Localization
@@ -22,7 +23,7 @@ import type { Swiper as SwiperInterface } from 'swiper/swiper';
 import type { 
   Vehicle, Vehicles, 
   VehicleTypes,
-  Nation, Nations
+  Nations
 } from '@/types/types'
 
 
@@ -88,31 +89,13 @@ const nations: Ref<Nations | undefined> = ref()
 
 // Load nation list
 const loadNations = async () => {
-  interface NationsResponse {
-    data   : Nation[]
-    status : string
-  }
+  const { data, error } = await nationsApi.getNations()
 
-  try {
-    const { data } = await api.get<NationsResponse>( 'nations' )
-    if ( data.data ) {
-      nations.value = data.data
-        .filter( nation => {
-          return !nation.tags.includes( 'hidden' )
-        } )
-        .reduce( ( acc: Nations, currentValue ) => {
-          acc[ currentValue.name ] = currentValue
-          return acc
-        }, {} )
-
-      // console.log( 'Nations', nations.value )
-    }
-  } catch ( error ) {
-    console.log( error )
-
-    if ( error instanceof Error ) {
-      showAlert( error )
-    }
+  if ( data ) {
+    nations.value = data
+  } else if ( error instanceof Error ) {
+    showAlert( error )
+    return
   }
 }
 

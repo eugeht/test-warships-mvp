@@ -88,9 +88,6 @@ export interface Vehicle {
 }
 
 
-// export interface VehiclesObject {
-//   [ id: number ]: Vehicle
-// }
 export type Vehicles = Map<string, Vehicle>
 
 
