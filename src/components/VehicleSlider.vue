@@ -61,8 +61,13 @@ const onSwiperInit = () => {
   if ( typeof swiperEl === 'object' && ( 'swiper' in swiperEl ) ) {
     Swiper.value = swiperEl.swiper as SwiperInterface
 
-    // Enable keyboard
-    Swiper.value.keyboard.enable()
+    // Keyboard
+    Swiper.value.on( 'keyPress', ( swiper, keyCode ) => {
+      console.log( keyCode )
+      if ( Number( keyCode ) === 27 ) {
+        handleCloseSlider()
+      }
+    } )
   }
 }
 
@@ -153,6 +158,9 @@ const handleSlidePrev = () => {
       :loop="false"
       :slides-per-view="1" 
       :initial-slide="SwiperInitialSlide"
+      :keyboard="{
+        enabled: true,
+      }"
       @init="onSwiperInit"
       @slideprevtransitionend="onSwiperSlidePrev"
       @slidenexttransitionstart="onSwiperSlideNext"
