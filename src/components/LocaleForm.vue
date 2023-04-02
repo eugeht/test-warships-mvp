@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// Vue
-import { defineEmits } from 'vue'
 // import { vOnClickOutside } from '@vueuse/components'
 // Localization
 import { useI18n } from 'vue-i18n'

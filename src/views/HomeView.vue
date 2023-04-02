@@ -12,14 +12,11 @@ import { useI18n } from 'vue-i18n'
 import LogoLoader from '@/components/LogoLoader.vue'
 import CustomSelect from '@/components/CustomSelect.vue'
 import VehicleBlock from '@/components/VehicleBlock.vue'
-import VehicleSliderBlock from '@/components/VehicleSliderBlock.vue'
+import VehicleSlider from '@/components/VehicleSlider.vue'
 // Composables
 import { useMedia } from '@/composables/useMedia'
 import { useErrorAlert } from '@/composables/useErrorAlert'
-// Swiper
-import { register } from 'swiper/element/bundle'
 // Types
-import type { Swiper as SwiperInterface } from 'swiper/swiper';
 import type { 
   Vehicle, Vehicles, 
   VehicleTypes,
@@ -242,102 +239,20 @@ const loadVehicles = async () => {
 
 
 // SLIDER ----------------------------------------------------------------------
+const sliderVehicleId: Ref<number | undefined> = ref()
 const isSliderVisible: Ref<boolean> = ref( false )
 
-const sliderVehicles: Ref<Vehicle[] | undefined> = ref()
-
-const Swiper: Ref<SwiperInterface | null> = ref( null )
-const SwiperInitialSlide: Ref<number> = ref( 0 )
-
-const onSwiperInit = () => {
-  const swiperEl = document.querySelector( 'swiper-container' ) as any
-
-  if ( !swiperEl ) {
-    return
-  }
-
-  if ( typeof swiperEl === 'object' && ( 'swiper' in swiperEl ) ) {
-    Swiper.value = swiperEl.swiper as SwiperInterface
-  }
-}
-
-const handleSlideNext = () => {
-  if ( !Swiper.value ) {
-    return
-  }
-
-  Swiper.value.slideNext()
-}
-
-const handleSlidePrev = () => {
-  if ( !Swiper.value ) {
-    return
-  }
-
-  Swiper.value.slidePrev()
-}
 
 
-// ..
-const sliderTresholdIndexes = [ 
-  -1, 
-  0, 
-  1, 
-]
-
-// ..
-const showSlider = ( id: string ) => {
-  if ( !vehiclesFiltered.value.size ) {
-    return
-  }
-
-  const filteredIndex = vehiclesFilteredKeys.value.indexOf( id )
-
-  sliderVehicles.value = []
-  
-  for ( let i of sliderTresholdIndexes ) {
-    if ( vehiclesFilteredValues.value[ filteredIndex + i ] ) {
-      sliderVehicles.value.push( vehiclesFilteredValues.value[ filteredIndex + i ] )
-    }
-  }
-
-  SwiperInitialSlide.value = sliderVehicles.value.length >= 3 ? 1 : 0
-
+const openSlider = ( id: string ) => {
   isSliderVisible.value = true
+  sliderVehicleId.value = Number( vehiclesFilteredKeys.value.indexOf( id ) )
 }
 
-const hideSlider = () => {
+
+const closeSlider = () => {
   isSliderVisible.value = false
-}
-
-
-const onSwiperSlidePrev = () => {
-  if ( !Swiper.value || !sliderVehicles.value?.length ) {
-    return
-  }
-
-  const firstId = sliderVehicles.value[ 0 ].id as string
-  const filteredIndex = vehiclesFilteredKeys.value.indexOf( firstId )
-
-  if ( vehiclesFilteredValues.value[ filteredIndex - 1 ] ) {
-    sliderVehicles.value.unshift( vehiclesFilteredValues.value[ filteredIndex - 1 ] )
-    Swiper.value.slideTo( Swiper.value.activeIndex + 1, 0 )
-  }
-}
-
-
-const onSwiperSlideNext = () => {
-  if ( !Swiper.value || !sliderVehicles.value?.length ) {
-    return
-  }
-
-  const lastId = sliderVehicles.value[ sliderVehicles.value?.length - 1 ].id as string
-  const filteredIndex = vehiclesFilteredKeys.value.indexOf( lastId )
-
-  if ( vehiclesFilteredValues.value[ filteredIndex + 1 ] ) {
-    sliderVehicles.value.push( vehiclesFilteredValues.value[ filteredIndex + 1 ] )
-    Swiper.value.isEnd = false
-  }
+  sliderVehicleId.value = undefined
 }
 // /SLIDER
 
@@ -345,9 +260,6 @@ const onSwiperSlideNext = () => {
 
 
 onMounted( async () => {
-  // Swiper - register swiper
-  register()
-
   // Send requests
   await Promise.all( [
     // Loading nations
@@ -482,7 +394,7 @@ onMounted( async () => {
               :nations="nations"
               :vehicle-types="vehicleTypes"
               :media-path="mediaPath"
-              @open="$vehicleId => showSlider( $vehicleId )"
+              @open="$vehicleId => openSlider( $vehicleId )"
             />
           </template>
         </Grid>
@@ -492,83 +404,16 @@ onMounted( async () => {
 
   <Teleport to="body">
     <Transition name="component-fade-fast">
-      <div 
-        v-if="isSliderVisible"
-        class="vehicles-slider"
-      >
-        <button 
-          class="vehicles-slider__close"
-          aria-labelledby="close"
-          @click="hideSlider"
-        >
-          <svg
-            class="vehicles-slider__close__icon"
-            width="40"
-            height="40"
-            viewBox="0 0 1024 1024"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <use xlink:href="#svg-icon-close-cross" />
-          </svg>
-        </button>
-        <swiper-container
-          class="vehicle-slider-swiper"
-          :loop="false"
-          :slides-per-view="1" 
-          :initial-slide="SwiperInitialSlide"
-          @init="onSwiperInit"
-          @slideprevtransitionend="onSwiperSlidePrev"
-          @slidenexttransitionstart="onSwiperSlideNext"
-        >
-          <swiper-slide
-            v-for="( sliderVehicle ) in sliderVehicles"
-            :key="`sldierVehicle_${ sliderVehicle.name }`"
-            class="vehicle-slider-swiper__slide"
-          >
-            <VehicleSliderBlock 
-              :vehicle="sliderVehicle"
-              :nations="nations"
-              :vehicle-types="vehicleTypes"
-              :media-path="mediaPath"
-            />
-          </swiper-slide>
-        </swiper-container>
-        <div class="vehicle-slide-navigation">
-          <button 
-            class="vehicle-slide-navigation-l"
-            :class="{
-              'disabled': Swiper?.isBeginning
-            }"
-            @click="handleSlidePrev"
-          >
-            <svg
-              class="vehicle-slide-navigation__icon"
-              width="24"
-              height="10"
-              viewBox="0 120 512 250"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            ><use xlink:href="#svg-icon-chevron-compact" /></svg>
-          </button>
-          <button 
-            class="vehicle-slide-navigation-r"
-            :class="{
-              'disabled': Swiper?.isEnd
-            }"
-            @click="handleSlideNext"
-          >
-            <svg
-              class="vehicle-slide-navigation__icon"
-              width="24"
-              height="10"
-              viewBox="0 120 512 250"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            ><use xlink:href="#svg-icon-chevron-compact" /></svg>
-          </button>
-        </div>
-      </div>
+      <VehicleSlider 
+        v-if="isSliderVisible && ( sliderVehicleId !== undefined ) && mediaPath && vehicleTypes && nations && vehiclesFiltered.size"
+        :media-path="mediaPath"
+        :nations="nations"
+        :vehicle-id="sliderVehicleId"
+        :vehicles="vehiclesFilteredValues"
+        :vehicles-filtered-keys="vehiclesFilteredKeys"
+        :vehicle-types="vehicleTypes"
+        @close="closeSlider"
+      />
     </Transition>
   </Teleport>
 </template>
@@ -780,161 +625,4 @@ $grid-breakpoint-xl: rem( 1680px );
 
 // /VEHICLES
 
-
-
-// VEHICLES SLIDER -------------------------------------------------------------
-.vehicles-slider {
-  position: absolute;
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 100%;
-
-  z-index: 1000;
-  background: #{ $color-intensedarkblue-a75 };
-  backdrop-filter: blur(4px);
-}
-
-
-.vehicles-slider__close {
-  position: absolute;
-  top: #{rem(16px)};
-  right: #{rem(16px)};
-
-  padding: #{rem(4px)};
-
-  z-index: 10000;
-
-  transition: all 0.1s linear;
-
-  border: none;
-  border-radius: 50%;
-
-  color: var(--color-text);
-  background: none;
-  opacity: 0.75;
-  cursor: pointer;
-  appearance: none;
-  
-  &:hover {
-    opacity: 1;
-    background-color: var(--color-input-bg);
-  }
-
-  &::before {
-    content: '';
-
-    inset: #{rem(-16px)} #{rem(-16px)} #{rem(-16px)} #{rem(-16px)};
-  }
-}
-
-
-.vehicles-slider__close__icon {
-  display: block;
-}
-
-
-.vehicle-slider-swiper {
-  height: 100%;
-  width: 100%;
-}
-
-.vehicle-slider-swiper__slide {
-  display: flex;
-  overflow: auto;
-  padding: #{rem(32px)} 0;
-}
-
-
-
-.vehicle-slide-navigation {
-  position: absolute;
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 100%;
-}
-
-.vehicle-slide-navigation-l,
-.vehicle-slide-navigation-r {
-  position: absolute;
-  top: 0;
-
-  width: 5%;
-  height: 100%;
-  padding: 0;
-
-  z-index: 10;
-
-  border: none;
-
-  color: var(--color-text);
-  appearance: none;
-  background: transparent;
-
-  @media only screen and (min-width: #{ rem(966px) }) {
-    width: calc( ( 100% - 870px ) / 2 );
-  }
-
-  &.disabled {
-    opacity: 0.5;
-    pointer-events: none;
-    cursor: default;
-  }
-
-  .vehicle-slide-navigation__icon {
-    opacity: 0.5;
-  }
-
-  &:hover {
-    .vehicle-slide-navigation__icon {
-      opacity: 1;
-    }
-  }
-
-  &:focus {
-    outline: none;
-  }
-}
-
-.vehicle-slide-navigation__icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-
-  width: 48px;
-  height: 20px;
-
-  transition: opacity 0.1s linear;
-}
-
-.vehicle-slide-navigation-l {
-  left: 0;
-  cursor: w-resize;
-
-  &:hover {
-    background: linear-gradient(-90deg, #{ rgba(#fff, 0) }, #{ rgba(#fff, 0.05) });
-  }
-
-  .vehicle-slide-navigation__icon {
-    transform: translate(-50%, -50%) rotate(90deg);
-  }
-}
-
-.vehicle-slide-navigation-r {
-  right: 0;
-  cursor: e-resize;
-
-  &:hover {
-    background: linear-gradient(90deg, #{ rgba(#fff, 0) }, #{ rgba(#fff, 0.05) });
-  }
-
-  .vehicle-slide-navigation__icon {
-    transform: translate(-50%, -50%) rotate(-90deg);
-  }
-}
-
-// /VEHICLES SLIDER
 </style>

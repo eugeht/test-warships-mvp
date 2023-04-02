@@ -6,19 +6,18 @@
     "src/**/*.vue",
     "./*.ts",
     ".eslintrc.cjs",
-    "*.cjs",
-    "cypress/**/*.ts"
+    "*.cjs"
   ],
   "exclude": [
     "*.json",
-    // "src/**/__tests__/*.ts",
-    // "src/**/__tests__/*.vue",
   ],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   }
 }
