@@ -240,18 +240,18 @@ const loadVehicles = async () => {
 
 // SLIDER ----------------------------------------------------------------------
 const sliderVehicleId: Ref<number | undefined> = ref()
-const isSliderVisible: Ref<boolean> = ref( false )
+const isSliderVisible: ComputedRef<boolean> = computed( () => {
+  return ( sliderVehicleId.value !== undefined ) && !!mediaPath && !!vehicleTypes.value && !!nations.value && vehiclesFiltered.value.size > 0
+} )
 
 
 
 const openSlider = ( id: string ) => {
-  isSliderVisible.value = true
   sliderVehicleId.value = Number( vehiclesFilteredKeys.value.indexOf( id ) )
 }
 
 
 const closeSlider = () => {
-  isSliderVisible.value = false
   sliderVehicleId.value = undefined
 }
 // /SLIDER
@@ -405,13 +405,13 @@ onMounted( async () => {
   <Teleport to="body">
     <Transition name="component-fade-fast">
       <VehicleSlider 
-        v-if="isSliderVisible && ( sliderVehicleId !== undefined ) && mediaPath && vehicleTypes && nations && vehiclesFiltered.size"
-        :media-path="mediaPath"
-        :nations="nations"
-        :vehicle-id="sliderVehicleId"
-        :vehicles="vehiclesFilteredValues"
-        :vehicles-filtered-keys="vehiclesFilteredKeys"
-        :vehicle-types="vehicleTypes"
+        v-if="isSliderVisible"
+        :media-path="<string>mediaPath"
+        :nations="<Nations>nations"
+        :vehicle-id="<number>sliderVehicleId"
+        :vehicles="<Vehicle[]>vehiclesFilteredValues"
+        :vehicles-filtered-keys="<string[]>vehiclesFilteredKeys"
+        :vehicle-types="<VehicleTypes>vehicleTypes"
         @close="closeSlider"
       />
     </Transition>
