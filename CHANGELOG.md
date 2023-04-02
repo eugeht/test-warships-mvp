@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/eugeht/test-warships-mvp/compare/v0.0.1...v0.0.2) (2023-04-02)
+
+
+### Features
+
+* Slider vehicle type ([163c3a1](https://github.com/eugeht/test-warships-mvp/commit/163c3a18f6d2ed487f4af6bfb69d8e843a5d1789))
+
 ### 0.0.1 (2023-03-27)
 
 
