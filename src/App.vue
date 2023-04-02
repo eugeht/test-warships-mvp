@@ -11,6 +11,8 @@ import { useErrorAlert } from '@/composables/useErrorAlert'
 // Localization
 import { useI18n } from 'vue-i18n'
 import { setLocaleHtmlAttr } from '@/localization'
+// Swiper
+import { register } from 'swiper/element/bundle'
 
 
 
@@ -40,6 +42,13 @@ const { loadMediaPath } = useMedia()
 
 void loadMediaPath()
 // /MEDIA
+
+
+
+// SWIPER -----------------------------------------------------------------------
+// Swiper - register swiper
+register()
+// /SWIPER
 
 </script>
 

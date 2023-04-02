@@ -1,10 +1,8 @@
 <script setup lang="ts">
 // Vue
-import { ref, type Ref, onMounted } from 'vue'
+import { ref, type Ref } from 'vue'
 // Components
 import VehicleSliderBlock from '@/components/VehicleSliderBlock.vue'
-// Swiper
-import { register } from 'swiper/element/bundle'
 // Types
 import type { Swiper as SwiperInterface } from 'swiper/swiper'
 import type { Vehicle, VehicleTypes, Nations } from '@/types/types'
@@ -122,13 +120,6 @@ const handleSlidePrev = () => {
   Swiper.value.slidePrev()
 }
 // /Events
-
-
-
-onMounted( () => {
-  // Swiper - register swiper
-  register()
-} )
 
 </script>
 
