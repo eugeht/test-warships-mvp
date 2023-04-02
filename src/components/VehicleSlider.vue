@@ -60,6 +60,9 @@ const onSwiperInit = () => {
 
   if ( typeof swiperEl === 'object' && ( 'swiper' in swiperEl ) ) {
     Swiper.value = swiperEl.swiper as SwiperInterface
+
+    // Enable keyboard
+    Swiper.value.keyboard.enable()
   }
 }
 
