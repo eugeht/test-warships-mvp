@@ -63,7 +63,6 @@ const onSwiperInit = () => {
 
     // Keyboard
     Swiper.value.on( 'keyPress', ( swiper, keyCode ) => {
-      console.log( keyCode )
       if ( Number( keyCode ) === 27 ) {
         handleCloseSlider()
       }
